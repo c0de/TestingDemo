@@ -37,7 +37,7 @@ public class GetUserByIdQueryHandler : Endpoint<GetUserByIdQuery, UserResponse>
             .FirstOrDefaultAsync(cancellationToken);
         if (user is null)
         {
-            await SendNotFoundAsync(cancellationToken);
+            await Send.NotFoundAsync(cancellationToken);
             return;
         }
         var response = new UserResponse
@@ -48,6 +48,6 @@ public class GetUserByIdQueryHandler : Endpoint<GetUserByIdQuery, UserResponse>
             Email = user.Email,
             CreatedAt = user.CreatedAt
         };
-        await SendOkAsync(response, cancellationToken);
+        await Send.OkAsync(response, cancellationToken);
     }
 }

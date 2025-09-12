@@ -41,6 +41,6 @@ public class GetUsersQuery : EndpointWithoutRequest<IEnumerable<UserResponse>>
             })
             .ToListAsync(cancellationToken);
 
-        await SendOkAsync(users, cancellationToken);
+        await Send.OkAsync(users, cancellationToken);
     }
 }
