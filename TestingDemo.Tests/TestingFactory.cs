@@ -23,12 +23,7 @@ public static class TestingFactory
     /// <returns></returns>
     public static async Task<TestingInstance> CreateAnonymousAsync()
     {
-        var dbContext = new DemoDbContext(new DbContextOptionsBuilder<DemoDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .UseAsyncSeeding(SeedDatabaseAsync)
-            .Options);
-        await dbContext.Database.EnsureCreatedAsync();
-
+        var dbContext = await CreateInMemoryDbContextAsync();
         var webFactory = new TestingDemoWebApplicationFactory(dbContext);
 
         return new TestingInstance
@@ -37,37 +32,6 @@ public static class TestingFactory
             Api = webFactory.CreateClient(),
             Services = webFactory.Services,
         };
-    }
-
-    /// <summary>
-    /// Database Seeding.
-    /// </summary>
-    /// <param name="context"></param>
-    /// <param name="arg2"></param>
-    /// <param name="token"></param>
-    /// <returns></returns>
-    private static async Task SeedDatabaseAsync(DemoDbContext context, bool arg2, CancellationToken token)
-    {
-        // seed users
-        foreach (var user in TestUsers.All)
-        {
-            context.Users.Add(user);
-        }
-        await context.SaveChangesAsync(token);
-        // seed dashboards
-        context.Dashboards.AddRange([
-            new Dashboard
-            {
-                Id = 1,
-                Name = "Admin Dashboard"
-            },
-            new Dashboard
-            {
-                Id = 2,
-                Name = "User Dashboard"
-            }
-        ]);
-        await context.SaveChangesAsync(token);
     }
 
     /// <summary>
@@ -81,14 +45,14 @@ public static class TestingFactory
         Action<IServiceCollection> action = null,
         string env = null)
     {
-        var dbContext = new DemoDbContext(new DbContextOptionsBuilder<DemoDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .UseAsyncSeeding(SeedDatabaseAsync)
-            .Options);
-        await dbContext.Database.EnsureCreatedAsync();
-
+        //var dbContext = await CreateInMemoryDbContextAsync();
+        var dbContext = await CreateSqlServerDbContextAsync();
         var webFactory = new TestingDemoWebApplicationFactory(dbContext, action, env);
+
+        // create test http client
         var httpClient = webFactory.CreateClient();
+
+        // create jwt token and set auth header
         var token = GenerateJwtToken(user);
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
@@ -99,6 +63,40 @@ public static class TestingFactory
             Services = webFactory.Services,
             User = user,
         };
+    }
+
+    /// <summary>
+    /// Create a in-memory DbContext instance with seeded data.
+    /// </summary>
+    /// <returns></returns>
+    private static async Task<DemoDbContext> CreateInMemoryDbContextAsync()
+    {
+        var options = new DbContextOptionsBuilder<DemoDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .UseAsyncSeeding(TestingSeed.SeedDatabaseAsync)
+            .Options;
+        var dbContext = new DemoDbContext(options);
+        await dbContext.Database.EnsureCreatedAsync();
+
+        return dbContext;
+    }
+
+    /// <summary>
+    /// Create a SQL Server DbContext instance with seeded data.
+    /// </summary>
+    /// <returns></returns>
+    private static async Task<DemoDbContext> CreateSqlServerDbContextAsync()
+    {
+        // localhost connection string for testing - using Integrated Security for local development
+        var connectionString = "Server=localhost; Integrated Security=True; Encrypt=True; TrustServerCertificate=True; Database=TestDatabase;";
+        var options = new DbContextOptionsBuilder<DemoDbContext>()
+            .UseSqlServer(connectionString)
+            .UseAsyncSeeding(TestingSeed.SeedDatabaseAsync)
+            .Options;
+        var dbContext = new DemoDbContext(options);
+        await dbContext.Database.EnsureCreatedAsync();
+
+        return dbContext;
     }
 
     /// <summary>
