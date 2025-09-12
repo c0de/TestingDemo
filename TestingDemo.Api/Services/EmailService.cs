@@ -15,6 +15,6 @@ public class EmailService : IEmailService
     public async Task SendEmailAsync(MailMessage mailMessage, CancellationToken cancellationToken)
     {
         // TODO: Implement email sending logic here.
-        await Task.Delay(1000);
+        await Task.Delay(1000, cancellationToken);
     }
 }

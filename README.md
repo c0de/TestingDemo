@@ -65,9 +65,9 @@ graph TD
     - `Dashboard` - Dashboard entity
     - `UserDashboard` - Many-to-many relationship entity
   - **Database Context**:
-    - `DemoDbContext` - EF Core DbContext implementing `IRepository`
+    - `DemoDbContext` - EF Core DbContext implementing `IDemoDbContext`
     - Entity configurations for database mapping
-  - **Repository Pattern**: `IRepository` interface for data access abstraction
+  - **Repository Pattern**: `IDemoDbContext` interface for data access abstraction
 - **Technologies**: Entity Framework Core, SQL Server provider
 
 #### 📁 **TestingDemo.Tests** (Testing Layer)
@@ -113,7 +113,7 @@ graph LR
 ### Clean Architecture Patterns
 - **Separation of Concerns**: Each project has a single responsibility
 - **Dependency Inversion**: Higher layers depend on abstractions, not implementations
-- **Repository Pattern**: Data access abstraction through `IRepository`
+- **Repository Pattern**: Data access abstraction through `IDemoDbContext`
 - **CQRS Pattern**: Commands and Queries separated for better maintainability
 
 ### Modern .NET Patterns
