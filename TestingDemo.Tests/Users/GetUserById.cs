@@ -7,7 +7,7 @@ namespace TestingDemo.Tests.Users;
 /// <summary>
 /// Tests for <see cref="GetUserByIdQuery"/>
 /// </summary>
-public class GetUserById
+public class GetUserByIdTests
 {
     /// <summary>
     /// Ensure an anynomous is unauthorized.

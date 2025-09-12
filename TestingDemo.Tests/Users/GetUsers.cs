@@ -7,7 +7,7 @@ namespace TestingDemo.Tests.Users;
 /// <summary>
 /// Tests for <see cref="GetUsersQuery"/>
 /// </summary>
-public class GetUsers
+public class GetUsersTests
 {
     /// <summary>
     /// Ensure an anynomous is unauthorized.

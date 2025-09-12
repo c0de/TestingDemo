@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 
 namespace TestingDemo.Tests.Users;
 
-public class UpdateUser
+public class UpdateUserTests
 {
     /// <summary>
     /// Ensure an anynomous is unauthorized.

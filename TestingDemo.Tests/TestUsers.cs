@@ -3,6 +3,9 @@ using TestingDemo.Entities.Models;
 
 namespace TestingDemo.Tests;
 
+/// <summary>
+/// Test users for the application.
+/// </summary>
 public static class TestUsers
 {
     /// <summary>

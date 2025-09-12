@@ -6,7 +6,7 @@ namespace TestingDemo.Tests.Users;
 /// <summary>
 /// Testing <see cref="DeleteUserCommand"/>.
 /// </summary>
-public class DeleteUser
+public class DeleteUserTests
 {
     /// <summary>
     /// Ensure an anynomous is unauthorized.

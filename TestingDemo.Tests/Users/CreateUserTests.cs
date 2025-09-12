@@ -12,7 +12,7 @@ namespace TestingDemo.Tests.Users;
 /// <summary>
 /// Testing <see cref="CreateUserCommand"/>.
 /// </summary>
-public class CreateUser
+public class CreateUserTests
 {
     /// <summary>
     /// Ensure an anynomous is unauthorized.

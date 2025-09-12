@@ -32,6 +32,9 @@ public class TestingInstance
     public User? User { get; set; }
 }
 
+/// <summary>
+/// Factory for creating testing instances.
+/// </summary>
 public static class TestingFactory
 {
     /// <summary>
@@ -103,6 +106,12 @@ public static class TestingFactory
         };
     }
 
+    /// <summary>
+    /// Generate a Testing JWT token for a user.
+    /// </summary>
+    /// <param name="user">user</param>
+    /// <param name="secret">secret key</param>
+    /// <returns></returns>
     private static string GenerateJwtToken(User user, string secret = "Super-Secret-Testing-Demo-Secret")
     {
         var claims = new[]
