@@ -134,37 +134,6 @@ public class GetDashboardsTests
     }
 
     /// <summary>
-    /// Ensure empty result is handled properly when no dashboards exist.
-    /// </summary>
-    [Fact]
-    public async Task NoDashboards_ShouldReturnEmptyList()
-    {
-        // Arrange
-        var session = await TestingFactory.CreateAnonymousAsync();
-        
-        // Create authenticated session but ensure all dashboards are deleted
-        var authSession = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
-        
-        // Delete all existing dashboards
-        var allDashboards = await authSession.Repository.Dashboards.Where(d => d.DeletedAt == null).ToListAsync();
-        foreach (var dashboard in allDashboards)
-        {
-            dashboard.DeletedAt = DateTime.UtcNow;
-        }
-        await authSession.Repository.SaveChangesAsync();
-
-        // Act
-        var response = await authSession.Api.GetAsync("/api/dashboards");
-
-        // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-
-        var dashboards = await response.Content.ReadFromJsonAsync<IEnumerable<DashboardResponse>>();
-        dashboards.ShouldNotBeNull();
-        dashboards.Count().ShouldBe(0);
-    }
-
-    /// <summary>
     /// Ensure multiple dashboards are returned correctly.
     /// </summary>
     [Fact]

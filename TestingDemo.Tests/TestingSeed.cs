@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.EntityFrameworkCore;
 using TestingDemo.Entities;
 using TestingDemo.Entities.Models;
 
@@ -17,25 +18,77 @@ public static class TestingSeed
     /// <returns></returns>
     public static async Task SeedDatabaseAsync(DemoDbContext context, bool arg2, CancellationToken token)
     {
-        // seed users
-        foreach (var user in TestUsers.All)
+        await SeedUsersAsync(context, token);
+        await SeedDashboardsAsync(context, token);
+    }
+
+    /// <summary>
+    /// Seeds the database with test users.
+    /// </summary>
+    /// <param name="context">The database context.</param>
+    /// <param name="token">Cancellation token.</param>
+    private static async Task SeedUsersAsync(DemoDbContext context, CancellationToken token)
+    {
+        var isSqlServer = context.Database.IsSqlServer();
+        
+        if (isSqlServer)
         {
-            context.Users.Add(user);
+            await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Users ON");
         }
-        await context.SaveChangesAsync(token);
-        // seed dashboards
-        context.Dashboards.AddRange([
-            new Dashboard
+        
+        try
+        {
+            foreach (var user in TestUsers.All)
             {
-                Id = 1,
-                Name = "Admin Dashboard"
-            },
-            new Dashboard
-            {
-                Id = 2,
-                Name = "User Dashboard"
+                context.Users.Add(user);
             }
-        ]);
-        await context.SaveChangesAsync(token);
+            await context.SaveChangesAsync(token);
+        }
+        finally
+        {
+            if (isSqlServer)
+            {
+                await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Users OFF");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Seeds the database with test dashboards.
+    /// </summary>
+    /// <param name="context">The database context.</param>
+    /// <param name="token">Cancellation token.</param>
+    private static async Task SeedDashboardsAsync(DemoDbContext context, CancellationToken token)
+    {
+        var isSqlServer = context.Database.IsSqlServer();
+        
+        if (isSqlServer)
+        {
+            await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Dashboards ON");
+        }
+        
+        try
+        {
+            context.Dashboards.AddRange([
+                new Dashboard
+                {
+                    Id = 1,
+                    Name = "Admin Dashboard"
+                },
+                new Dashboard
+                {
+                    Id = 2,
+                    Name = "User Dashboard"
+                }
+            ]);
+            await context.SaveChangesAsync(token);
+        }
+        finally
+        {
+            if (isSqlServer)
+            {
+                await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Dashboards OFF");
+            }
+        }
     }
 }

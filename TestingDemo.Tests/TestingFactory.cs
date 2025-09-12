@@ -17,13 +17,16 @@ namespace TestingDemo.Tests;
 /// </summary>
 public static class TestingFactory
 {
+    private static bool _sqlServerDbInitialized = false;
+    private static readonly SemaphoreSlim _initializationSemaphore = new(1, 1);
+
     /// <summary>
     /// Create an anonymous instance.
     /// </summary>
     /// <returns></returns>
-    public static async Task<TestingInstance> CreateAnonymousAsync()
+    public static async Task<TestingInstance> CreateAnonymousAsync(CancellationToken cancellationToken = default)
     {
-        var dbContext = await CreateInMemoryDbContextAsync();
+        var dbContext = await CreateInMemoryDbContextAsync(cancellationToken);
         var webFactory = new TestingDemoWebApplicationFactory(dbContext);
 
         return new TestingInstance
@@ -43,10 +46,12 @@ public static class TestingFactory
     /// <returns></returns>
     public static async Task<TestingInstance> CreateForUserAsync(User user,
         Action<IServiceCollection> action = null,
-        string env = null)
+        string env = null,
+        CancellationToken cancellationToken = default)
     {
-        //var dbContext = await CreateInMemoryDbContextAsync();
-        var dbContext = await CreateSqlServerDbContextAsync();
+        // can switch between in-memory and sql server db context here
+        var dbContext = await CreateInMemoryDbContextAsync(cancellationToken);
+        //var dbContext = await CreateSqlServerDbContextAsync(cancellationToken);
         var webFactory = new TestingDemoWebApplicationFactory(dbContext, action, env);
 
         // create test http client
@@ -69,14 +74,14 @@ public static class TestingFactory
     /// Create a in-memory DbContext instance with seeded data.
     /// </summary>
     /// <returns></returns>
-    private static async Task<DemoDbContext> CreateInMemoryDbContextAsync()
+    private static async Task<DemoDbContext> CreateInMemoryDbContextAsync(CancellationToken cancellationToken)
     {
         var options = new DbContextOptionsBuilder<DemoDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .UseAsyncSeeding(TestingSeed.SeedDatabaseAsync)
             .Options;
         var dbContext = new DemoDbContext(options);
-        await dbContext.Database.EnsureCreatedAsync();
+        await dbContext.Database.EnsureCreatedAsync(cancellationToken);
 
         return dbContext;
     }
@@ -85,7 +90,7 @@ public static class TestingFactory
     /// Create a SQL Server DbContext instance with seeded data.
     /// </summary>
     /// <returns></returns>
-    private static async Task<DemoDbContext> CreateSqlServerDbContextAsync()
+    private static async Task<DemoDbContext> CreateSqlServerDbContextAsync(CancellationToken cancellationToken)
     {
         // localhost connection string for testing - using Integrated Security for local development
         var connectionString = "Server=localhost; Integrated Security=True; Encrypt=True; TrustServerCertificate=True; Database=TestDatabase;";
@@ -94,7 +99,25 @@ public static class TestingFactory
             .UseAsyncSeeding(TestingSeed.SeedDatabaseAsync)
             .Options;
         var dbContext = new DemoDbContext(options);
-        await dbContext.Database.EnsureCreatedAsync();
+
+        // Only initialize the database once on the first call
+        if (!_sqlServerDbInitialized)
+        {
+            await _initializationSemaphore.WaitAsync(cancellationToken);
+            try
+            {
+                if (!_sqlServerDbInitialized)
+                {
+                    await dbContext.Database.EnsureDeletedAsync(cancellationToken);
+                    await dbContext.Database.EnsureCreatedAsync(cancellationToken);
+                    _sqlServerDbInitialized = true;
+                }
+            }
+            finally
+            {
+                _initializationSemaphore.Release();
+            }
+        }
 
         return dbContext;
     }

@@ -38,7 +38,7 @@ public class CreateDashboardTests
         var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
         var command = new CreateDashboardCommand
         {
-            Name = "Sales Dashboard",
+            Name = $"Test-{Guid.NewGuid().ToString()}",
             Description = "Dashboard for tracking sales metrics"
         };
 
