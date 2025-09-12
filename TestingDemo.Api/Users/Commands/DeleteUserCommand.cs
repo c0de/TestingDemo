@@ -26,11 +26,11 @@ public class DeleteUserCommandHandler : Endpoint<DeleteUserCommand,
                                            ProblemDetails>>
 {
     private readonly ILogger<DeleteUserCommandHandler> _logger;
-    private readonly IRepository _dbContext;
+    private readonly IDemoDbContext _dbContext;
 
     public DeleteUserCommandHandler(
         ILogger<DeleteUserCommandHandler> logger,
-        IRepository dbContext)
+        IDemoDbContext dbContext)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));

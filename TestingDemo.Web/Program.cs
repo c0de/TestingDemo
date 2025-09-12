@@ -18,7 +18,7 @@ if (env != "Testing")
     builder.Services.AddDbContext<DemoDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-    builder.Services.AddScoped<IRepository>(e => {
+    builder.Services.AddScoped<IDemoDbContext>(e => {
         return e.GetRequiredService<DemoDbContext>();
     });
 }

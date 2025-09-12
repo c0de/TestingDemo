@@ -10,9 +10,9 @@ namespace TestingDemo.Api.Users.Queries;
 /// </summary>
 public class GetUsersQuery : EndpointWithoutRequest<IEnumerable<UserResponse>>
 {
-    private readonly IRepository _dbContext;
+    private readonly IDemoDbContext _dbContext;
 
-    public GetUsersQuery(IRepository dbContext)
+    public GetUsersQuery(IDemoDbContext dbContext)
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }

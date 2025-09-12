@@ -70,7 +70,7 @@ public class CreateUserCommandHandler : Endpoint<CreateUserCommand,
                                            ProblemDetails>>
 {
     private readonly ILogger<CreateUserCommandHandler> _logger;
-    private readonly IRepository _dbContext;
+    private readonly IDemoDbContext _dbContext;
     private readonly IEmailService _emailService;
 
     /// <summary>
@@ -78,7 +78,7 @@ public class CreateUserCommandHandler : Endpoint<CreateUserCommand,
     /// </summary>
     public CreateUserCommandHandler(
         ILogger<CreateUserCommandHandler> logger,
-        IRepository dbContext,
+        IDemoDbContext dbContext,
         IEmailService emailService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

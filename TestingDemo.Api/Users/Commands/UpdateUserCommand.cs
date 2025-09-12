@@ -52,11 +52,11 @@ public class UpdateUserCommandHandler : Endpoint<UpdateUserCommand,
                                            ProblemDetails>>
 {
     private readonly ILogger<UpdateUserCommandHandler> _logger;
-    private readonly IRepository _dbContext;
+    private readonly IDemoDbContext _dbContext;
 
     public UpdateUserCommandHandler(
         ILogger<UpdateUserCommandHandler> logger,
-        IRepository dbContext)
+        IDemoDbContext dbContext)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));

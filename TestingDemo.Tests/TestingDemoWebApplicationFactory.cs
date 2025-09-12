@@ -35,7 +35,7 @@ public class TestingDemoWebApplicationFactory : WebApplicationFactory<Program>
         builder.UseEnvironment(_env);
         builder.ConfigureServices(services =>
         {
-            services.AddSingleton<IRepository>(_dbContext);
+            services.AddSingleton<IDemoDbContext>(_dbContext);
 
             // invoke overrides
             _serviceAction?.Invoke(services);

@@ -4,7 +4,10 @@ using TestingDemo.Entities.Models;
 
 namespace TestingDemo.Entities.Configurations;
 
-public class UserConfiguration : IEntityTypeConfiguration<User>
+/// <summary>
+/// Configuration for the <see cref="User"/> entity.
+/// </summary>
+internal class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {

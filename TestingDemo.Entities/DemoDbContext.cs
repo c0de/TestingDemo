@@ -3,13 +3,21 @@ using TestingDemo.Entities.Models;
 
 namespace TestingDemo.Entities;
 
-public class DemoDbContext : DbContext, IRepository
+/// <summary>
+/// Database context for the demo application.
+/// </summary>
+public class DemoDbContext : DbContext, IDemoDbContext
 {
+    /// <summary>
+    /// Constructor for DemoDbContext.
+    /// </summary>
+    /// <param name="options"></param>
     public DemoDbContext(DbContextOptions<DemoDbContext> options) : base(options)
     {
     }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<Dashboard> Dashboards { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

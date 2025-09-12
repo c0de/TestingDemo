@@ -4,6 +4,9 @@ using TestingDemo.Entities.Models;
 
 namespace TestingDemo.Entities.Configurations;
 
+/// <summary>
+/// Configuration for the <see cref="UserDashboard"/> entity.
+/// </summary>
 public class UserDashboardConfiguration : IEntityTypeConfiguration<UserDashboard>
 {
     public void Configure(EntityTypeBuilder<UserDashboard> builder)

@@ -12,9 +12,9 @@ public class GetUserByIdQuery
 
 public class GetUserByIdQueryHandler : Endpoint<GetUserByIdQuery, UserResponse>
 {
-    private readonly IRepository _dbContext;
+    private readonly IDemoDbContext _dbContext;
 
-    public GetUserByIdQueryHandler(IRepository dbContext)
+    public GetUserByIdQueryHandler(IDemoDbContext dbContext)
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }

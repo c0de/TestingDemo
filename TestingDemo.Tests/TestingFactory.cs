@@ -17,7 +17,7 @@ public class TestingInstance
     /// <summary>
     /// Injected IRepository.
     /// </summary>
-    public required IRepository Repository { get; set; }
+    public required IDemoDbContext Repository { get; set; }
     /// <summary>
     /// Http Client to test.
     /// </summary>

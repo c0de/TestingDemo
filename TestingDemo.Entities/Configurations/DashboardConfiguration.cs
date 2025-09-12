@@ -4,7 +4,10 @@ using TestingDemo.Entities.Models;
 
 namespace TestingDemo.Entities.Configurations;
 
-public class DashboardConfiguration : IEntityTypeConfiguration<Dashboard>
+/// <summary>
+/// Configuration for the <see cref="Dashboard"/> entity.
+/// </summary>
+internal class DashboardConfiguration : IEntityTypeConfiguration<Dashboard>
 {
     public void Configure(EntityTypeBuilder<Dashboard> builder)
     {
