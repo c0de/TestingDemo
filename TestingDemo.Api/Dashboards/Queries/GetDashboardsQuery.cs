@@ -8,11 +8,11 @@ namespace TestingDemo.Api.Dashboards.Queries;
 /// <summary>
 /// Get all dashboards.
 /// </summary>
-public class GetUsersQuery : EndpointWithoutRequest<IEnumerable<DashboardResponse>>
+public class GetDashboardsQuery : EndpointWithoutRequest<IEnumerable<DashboardResponse>>
 {
     private readonly IDemoDbContext _dbContext;
 
-    public GetUsersQuery(IDemoDbContext dbContext)
+    public GetDashboardsQuery(IDemoDbContext dbContext)
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
@@ -28,7 +28,7 @@ public class GetUsersQuery : EndpointWithoutRequest<IEnumerable<DashboardRespons
 
     public override async Task HandleAsync(CancellationToken cancellationToken)
     {
-        var users = await _dbContext.Dashboards
+        var dashboards = await _dbContext.Dashboards
             .AsNoTracking()
             .Where(e => e.DeletedAt == null)
             .Select(e => new DashboardResponse
@@ -39,6 +39,6 @@ public class GetUsersQuery : EndpointWithoutRequest<IEnumerable<DashboardRespons
             })
             .ToListAsync(cancellationToken);
 
-        await Send.OkAsync(users, cancellationToken);
+        await Send.OkAsync(dashboards, cancellationToken);
     }
 }

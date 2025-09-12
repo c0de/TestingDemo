@@ -39,7 +39,7 @@ public class DeleteUserCommandHandler : Endpoint<DeleteUserCommand,
     public override void Configure()
     {
         Delete("/api/users/{Id}");
-        Roles("Admin");
+        Roles(Role.Admin.ToString());
         Description(x => x
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)

@@ -65,7 +65,7 @@ public class UpdateUserCommandHandler : Endpoint<UpdateUserCommand,
     public override void Configure()
     {
         Put("/api/users");
-        Roles("Admin");
+        Roles(Role.Admin.ToString());
         Description(x => x
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)

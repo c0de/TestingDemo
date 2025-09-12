@@ -89,7 +89,7 @@ public class CreateUserCommandHandler : Endpoint<CreateUserCommand,
     public override void Configure()
     {
         Post("/api/users");
-        Roles("Admin");
+        Roles(Role.Admin.ToString());
         Description(x => x
             .Produces<CreateUserCommandResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest)

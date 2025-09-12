@@ -1,9 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using TestingDemo.Entities;
 using TestingDemo.Entities.Models;
 
@@ -43,12 +46,27 @@ public static class TestingFactory
     /// <param name="arg2"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    private static async Task SeedDatabaseAsync(DbContext context, bool arg2, CancellationToken token)
+    private static async Task SeedDatabaseAsync(DemoDbContext context, bool arg2, CancellationToken token)
     {
+        // seed users
         foreach (var user in TestUsers.All)
         {
-            context.Add(user);
+            context.Users.Add(user);
         }
+        await context.SaveChangesAsync(token);
+        // seed dashboards
+        context.Dashboards.AddRange([
+            new Dashboard
+            {
+                Id = 1,
+                Name = "Admin Dashboard"
+            },
+            new Dashboard
+            {
+                Id = 2,
+                Name = "User Dashboard"
+            }
+        ]);
         await context.SaveChangesAsync(token);
     }
 
