@@ -50,10 +50,9 @@ public static class TestingFactory
         string env = null,
         CancellationToken cancellationToken = default)
     {
-        // switch between in-memory and sql server db context
-        //var dbContext = await CreateInMemoryDbContextAsync(cancellationToken);
         var dbContext = await CreateSqlServerDbContextAsync(cancellationToken);
-        var webFactory = new TestingDemoWebApplicationFactory(dbContext, action, env);
+
+        var webFactory = new TestingDemoWebApplicationFactory(null, action, env);
 
         // create test http client
         var httpClient = webFactory.CreateClient();

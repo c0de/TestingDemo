@@ -11,17 +11,13 @@ using TestingDemo.Entities;
 var builder = WebApplication.CreateBuilder(args);
 var env = builder.Environment.EnvironmentName;
 
-// service options if NOT testing
-if (env != "Testing")
-{
-    // Add DbContext
-    builder.Services.AddDbContext<DemoDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Add DbContext
+builder.Services.AddDbContext<DemoDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-    builder.Services.AddScoped<IDemoDbContext>(e => {
-        return e.GetRequiredService<DemoDbContext>();
-    });
-}
+builder.Services.AddScoped<IDemoDbContext>(e => {
+    return e.GetRequiredService<DemoDbContext>();
+});
 
 // Add services to the container.
 builder.Services.AddFastEndpoints();

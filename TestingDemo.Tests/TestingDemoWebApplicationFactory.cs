@@ -28,7 +28,7 @@ public class TestingDemoWebApplicationFactory : WebApplicationFactory<Program>
         Action<IServiceCollection>? serviceAction = null,
         string? env = null)
     {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        _dbContext = dbContext;
         _serviceAction = serviceAction;
         _env = env ?? "Testing";
     }
@@ -38,7 +38,10 @@ public class TestingDemoWebApplicationFactory : WebApplicationFactory<Program>
         builder.UseEnvironment(_env);
         builder.ConfigureServices(services =>
         {
-            services.AddSingleton<IDemoDbContext>(_dbContext);
+            if (_dbContext != null)
+            {
+                services.AddSingleton<IDemoDbContext>(_dbContext);
+            }
 
             // invoke overrides
             _serviceAction?.Invoke(services);

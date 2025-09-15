@@ -33,7 +33,7 @@ public static class TestingSeed
         
         if (isSqlServer)
         {
-            await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Users ON");
+            await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Users ON", cancellationToken: token);
         }
         
         try
@@ -48,7 +48,7 @@ public static class TestingSeed
         {
             if (isSqlServer)
             {
-                await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Users OFF");
+                await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Users OFF", cancellationToken: token);
             }
         }
     }
@@ -64,7 +64,7 @@ public static class TestingSeed
         
         if (isSqlServer)
         {
-            await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Dashboards ON");
+            await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Dashboards ON", cancellationToken: token);
         }
         
         try
@@ -87,7 +87,7 @@ public static class TestingSeed
         {
             if (isSqlServer)
             {
-                await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Dashboards OFF");
+                await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Dashboards OFF", cancellationToken: token);
             }
         }
     }
