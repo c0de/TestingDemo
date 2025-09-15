@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TestingDemo.Entities.Migrations\TestingDemo.Entities.Migrations.csproj" />
     <ProjectReference Include="..\TestingDemo.Web\TestingDemo.Web.csproj" />
   </ItemGroup>
 

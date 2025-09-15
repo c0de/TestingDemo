@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+using Microsoft.EntityFrameworkCore;
 using TestingDemo.Entities.Models;
 
 namespace TestingDemo.Entities;
@@ -24,5 +27,25 @@ public class DemoDbContext : DbContext, IDemoDbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DemoDbContext).Assembly);
+    }
+
+    /// <summary>
+    /// Executes the given SQL against the database and returns the number of rows affected.
+    /// </summary>
+    /// <param name="sql">The SQL to execute.</param>
+    /// <param name="timeoutInSeconds">Command timeout in seconds.</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    /// <exception cref="NotSupportedException"></exception>
+    public async Task<int> ExecuteAsync(string sql, int timeoutInSeconds, CancellationToken cancellationToken = default)
+    {
+        if (!Database.IsSqlServer())
+        {
+            throw new NotSupportedException("ExecuteAsync is only supported for SQL Server databases.");
+        }
+
+        Database.SetCommandTimeout(timeoutInSeconds);
+
+        return await Database.ExecuteSqlRawAsync(sql, cancellationToken);
     }
 }

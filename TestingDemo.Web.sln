@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestingDemo.Entities.Migrations", "TestingDemo.Entities.Migrations\TestingDemo.Entities.Migrations.csproj", "{E3E7DF4E-C2BF-45B0-9860-A38E4C632278}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{565A947A-556D-4668-80A4-2B05D6E698C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{565A947A-556D-4668-80A4-2B05D6E698C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{565A947A-556D-4668-80A4-2B05D6E698C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3E7DF4E-C2BF-45B0-9860-A38E4C632278}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3E7DF4E-C2BF-45B0-9860-A38E4C632278}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3E7DF4E-C2BF-45B0-9860-A38E4C632278}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3E7DF4E-C2BF-45B0-9860-A38E4C632278}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

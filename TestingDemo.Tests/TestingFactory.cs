@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using TestingDemo.Entities;
+using TestingDemo.Entities.Migrations;
 using TestingDemo.Entities.Models;
 
 namespace TestingDemo.Tests;
@@ -49,9 +50,9 @@ public static class TestingFactory
         string env = null,
         CancellationToken cancellationToken = default)
     {
-        // can switch between in-memory and sql server db context here
-        var dbContext = await CreateInMemoryDbContextAsync(cancellationToken);
-        //var dbContext = await CreateSqlServerDbContextAsync(cancellationToken);
+        // switch between in-memory and sql server db context
+        //var dbContext = await CreateInMemoryDbContextAsync(cancellationToken);
+        var dbContext = await CreateSqlServerDbContextAsync(cancellationToken);
         var webFactory = new TestingDemoWebApplicationFactory(dbContext, action, env);
 
         // create test http client
@@ -100,26 +101,50 @@ public static class TestingFactory
             .Options;
         var dbContext = new DemoDbContext(options);
 
-        // Only initialize the database once on the first call
-        if (!_sqlServerDbInitialized)
-        {
-            await _initializationSemaphore.WaitAsync(cancellationToken);
-            try
-            {
-                if (!_sqlServerDbInitialized)
-                {
-                    await dbContext.Database.EnsureDeletedAsync(cancellationToken);
-                    await dbContext.Database.EnsureCreatedAsync(cancellationToken);
-                    _sqlServerDbInitialized = true;
-                }
-            }
-            finally
-            {
-                _initializationSemaphore.Release();
-            }
-        }
+        await InitializeSqlDatabaseAsync(dbContext, cancellationToken);
 
         return dbContext;
+    }
+
+    /// <summary>
+    /// Initialize Sql Database only once.
+    /// </summary>
+    /// <param name="dbContext"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    private static async Task InitializeSqlDatabaseAsync(DbContext dbContext, CancellationToken cancellationToken)
+    {
+        if (_sqlServerDbInitialized)
+        {
+            return;
+        }
+
+        await _initializationSemaphore.WaitAsync(cancellationToken);
+        try
+        {
+            // drop the database so we can create and seed
+            await dbContext.Database.EnsureDeletedAsync(cancellationToken);
+
+            // recommended for simple setup
+            await dbContext.Database.EnsureCreatedAsync(cancellationToken);
+
+            // ef-migrations
+            //await dbContext.Database.MigrateAsync(cancellationToken);
+
+            // sync stored procedures, views, functions, etc.
+            var result = await dbContext.SyncSqlObjectsAsync(cancellationToken: cancellationToken);
+
+            if (result.ErrorCount > 0)
+            {
+                throw new InvalidOperationException($"Stored procedure sync failed with {result.ErrorCount} errors");
+            }
+
+            _sqlServerDbInitialized = true;
+        }
+        finally
+        {
+            _initializationSemaphore.Release();
+        }
     }
 
     /// <summary>

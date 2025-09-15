@@ -7,11 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FastEndpoints" Version="7.0.1" />
+    <None Remove="StoredProcedures\dbo.Process_Users.sql" />
+    <None Remove="Views\dbo.ActiveUsers.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="StoredProcedures\dbo.Process_Users.sql" />
+    <EmbeddedResource Include="Views\dbo.ActiveUsers.sql" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TestingDemo.Entities\TestingDemo.Entities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Functions\" />
   </ItemGroup>
 
 </Project>
