@@ -5,6 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using TestingDemo.Entities;
@@ -84,20 +85,21 @@ public static class TestingFactory
                 return;
             }
 
-            // localhost connection string for testing - using Integrated Security for local development
+            // TODO: get the connection string from configuration so tests can be run in a pipeline
             var connectionString = "Server=localhost; Integrated Security=True; Encrypt=True; TrustServerCertificate=True; Database=TestDatabase;";
-            
-            // Use the same configuration method as in production to ensure consistency
-            var optionsBuilder = new DbContextOptionsBuilder<DemoDbContext>();
-            DemoDbContext.ConfigureForSqlServer(optionsBuilder, connectionString);
-            optionsBuilder.UseAsyncSeeding(TestingSeed.SeedDatabaseAsync);
-            
-            using var dbContext = new DemoDbContext(optionsBuilder.Options);
+            var options = new DbContextOptionsBuilder<DemoDbContext>()
+                .UseSqlServer(connectionString, options => {
+                    var assemblyName = typeof(DemoDbContextFactory).Assembly.GetName().Name;
+                    options.MigrationsAssembly(assemblyName);
+                })
+                .UseAsyncSeeding(TestingSeed.SeedDatabaseAsync)
+                .Options;
+            using var dbContext = new DemoDbContext(options);
 
             // drop the database so we can create and seed
             await dbContext.Database.EnsureDeletedAsync(cancellationToken);
 
-            // create the database isomg ef core configuration
+            // create using ef core
             //await dbContext.Database.EnsureCreatedAsync(cancellationToken);
 
             // ef-migrations

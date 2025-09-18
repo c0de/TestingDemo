@@ -3,6 +3,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Migrations.Internal;
 
 namespace TestingDemo.Entities.Migrations;
 
@@ -23,8 +24,10 @@ public class DemoDbContextFactory : IDesignTimeDbContextFactory<DemoDbContext>
 
         var optionsBuilder = new DbContextOptionsBuilder<DemoDbContext>();
 
-        // Use the static method from DemoDbContext to configure SQL Server with migrations
-        DemoDbContext.ConfigureForSqlServer(optionsBuilder, connectionString);
+        optionsBuilder.UseSqlServer(connectionString, options =>
+        {
+            options.MigrationsAssembly("TestingDemo.Entities.Migrations");
+        });
 
         return new DemoDbContext(optionsBuilder.Options);
     }

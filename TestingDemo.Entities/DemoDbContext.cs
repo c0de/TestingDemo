@@ -50,22 +50,4 @@ public class DemoDbContext : DbContext, IDemoDbContext
 
         return await Database.ExecuteSqlRawAsync(sql, parameters, cancellationToken);
     }
-
-    /// <summary>
-    /// Configures the context to use SQL Server with migrations assembly.
-    /// </summary>
-    /// <param name="optionsBuilder">Options builder</param>
-    /// <param name="connectionString">Database connection string</param>
-    /// <param name="migrationsAssembly">Assembly name containing migrations (defaults to TestingDemo.Entities.Migrations)</param>
-    /// <returns>Configured options builder</returns>
-    public static DbContextOptionsBuilder<DemoDbContext> ConfigureForSqlServer(
-        DbContextOptionsBuilder<DemoDbContext> optionsBuilder,
-        string connectionString,
-        string migrationsAssembly = "TestingDemo.Entities.Migrations")
-    {
-        return optionsBuilder.UseSqlServer(connectionString, options =>
-        {
-            options.MigrationsAssembly(migrationsAssembly);
-        });
-    }
 }
