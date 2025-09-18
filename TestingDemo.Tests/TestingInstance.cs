@@ -9,7 +9,7 @@ namespace TestingDemo.Tests;
 /// <summary>
 /// Model for testing an api endpoint.
 /// </summary>
-public class TestingInstance
+public class TestingInstance : IDisposable
 {
     /// <summary>
     /// Injected <see cref="IDemoDbContext"/>.
@@ -27,4 +27,14 @@ public class TestingInstance
     /// Authenticated User.
     /// </summary>
     public User? User { get; set; }
+
+    /// <summary>
+    /// Dispose the instance.
+    /// </summary>
+    public void Dispose()
+    {
+        Repository.Dispose();
+        Api.Dispose();
+        GC.SuppressFinalize(this);
+    }
 }

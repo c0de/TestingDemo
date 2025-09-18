@@ -1,8 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TestingDemo.Api.Dashboards.Commands;
 
 namespace TestingDemo.Tests.Dashboards;
@@ -181,7 +183,7 @@ public class CreateDashboardTests
     {
         // Arrange
         var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
-        
+
         // Create first dashboard
         var firstCommand = new CreateDashboardCommand
         {
@@ -267,7 +269,7 @@ public class CreateDashboardTests
         // Verify in database
         var dashboard = await session.Repository.Dashboards
             .FirstOrDefaultAsync(d => d.Id == result.Id);
-        
+
         dashboard.ShouldNotBeNull();
         dashboard.Name.ShouldBe(command.Name);
         dashboard.Description.ShouldBe(command.Description);
@@ -294,10 +296,10 @@ public class CreateDashboardTests
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
-        
+
         var result = await response.Content.ReadAsJsonAsync<CreateDashboardCommandResponse>();
         result.ShouldNotBeNull();
-        
+
         response.Headers.Location?.ToString().ShouldBe($"/api/dashboards/{result.Id}");
     }
 }

@@ -7,6 +7,9 @@ using TestingDemo.Entities.Models;
 
 namespace TestingDemo.Tests;
 
+/// <summary>
+/// Seeds the database with default data for testing purposes.
+/// </summary>
 public static class TestingSeed
 {
     /// <summary>
@@ -29,12 +32,7 @@ public static class TestingSeed
     /// <param name="token">Cancellation token.</param>
     private static async Task SeedUsersAsync(DemoDbContext context, CancellationToken token)
     {
-        var isSqlServer = context.Database.IsSqlServer();
-        
-        if (isSqlServer)
-        {
-            await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Users ON", cancellationToken: token);
-        }
+        await context.SetIdentityInsertOn("Users", token);
         
         try
         {
@@ -46,10 +44,7 @@ public static class TestingSeed
         }
         finally
         {
-            if (isSqlServer)
-            {
-                await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Users OFF", cancellationToken: token);
-            }
+            await context.SetIdentityInsertOff("Users", token);
         }
     }
 
@@ -60,12 +55,7 @@ public static class TestingSeed
     /// <param name="token">Cancellation token.</param>
     private static async Task SeedDashboardsAsync(DemoDbContext context, CancellationToken token)
     {
-        var isSqlServer = context.Database.IsSqlServer();
-        
-        if (isSqlServer)
-        {
-            await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Dashboards ON", cancellationToken: token);
-        }
+        await context.SetIdentityInsertOn("Dashboards", token);
         
         try
         {
@@ -85,10 +75,41 @@ public static class TestingSeed
         }
         finally
         {
-            if (isSqlServer)
-            {
-                await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Dashboards OFF", cancellationToken: token);
-            }
+            await context.SetIdentityInsertOff("Dashboards", token);
+        }
+    }
+
+    /// <summary>
+    /// Set Identity insert ON for the specified table if using SQL Server.
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="tableName"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    private static async Task SetIdentityInsertOn(this DemoDbContext context, string tableName, CancellationToken token)
+    {
+        var isSqlServer = context.Database.IsSqlServer();
+        if (isSqlServer)
+        {
+            var command = $"SET IDENTITY_INSERT {tableName} ON";
+            await context.Database.ExecuteSqlRawAsync(command, cancellationToken: token);
+        }
+    }
+
+    /// <summary>
+    /// Set Identity insert OFF for the specified table if using SQL Server.
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="tableName"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    private static async Task SetIdentityInsertOff(this DemoDbContext context, string tableName, CancellationToken token)
+    {
+        var isSqlServer = context.Database.IsSqlServer();
+        if (isSqlServer)
+        {
+            var command = $"SET IDENTITY_INSERT {tableName} OFF";
+            await context.Database.ExecuteSqlRawAsync(command, cancellationToken: token);
         }
     }
 }

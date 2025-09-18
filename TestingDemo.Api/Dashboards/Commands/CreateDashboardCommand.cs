@@ -51,7 +51,7 @@ public class CreateDashboardCommandValidator : Validator<CreateDashboardCommand>
             .MaximumLength(100)
             .MustAsync(async (name, cancellationToken) =>
             {
-                bool exists = await _dbContext.Dashboards
+                var exists = await _dbContext.Dashboards
                     .AnyAsync(d => d.Name == name && d.DeletedAt == null, cancellationToken);
                 return !exists;
             })
