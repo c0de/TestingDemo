@@ -12,25 +12,6 @@ namespace TestingDemo.Entities.Migrations;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds DemoDbContext to the service collection configured for SQL Server with migrations in this assembly.
-    /// </summary>
-    /// <param name="services">The service collection</param>
-    /// <param name="connectionString">The database connection string</param>
-    /// <returns>The service collection for method chaining</returns>
-    public static IServiceCollection AddDemoDbContextWithMigrations(
-        this IServiceCollection services,
-        string connectionString)
-    {
-        return services.AddDbContext<DemoDbContext>(options =>
-        {
-            options.UseSqlServer(connectionString, sqlOptions =>
-            {
-                sqlOptions.MigrationsAssembly(typeof(ServiceCollectionExtensions).Assembly.GetName().Name);
-            });
-        });
-    }
-
-    /// <summary>
     /// Adds DemoDbContext to the service collection with custom configuration and migrations in this assembly.
     /// </summary>
     /// <param name="services">The service collection</param>
@@ -40,9 +21,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddDemoDbContextWithMigrations(
         this IServiceCollection services,
         string connectionString,
-        Action<DbContextOptionsBuilder> configureOptions)
+        Action<DbContextOptionsBuilder> configureOptions = null)
     {
-        return services.AddDbContext<DemoDbContext>(options =>
+        services.AddDbContext<DemoDbContext>(options =>
         {
             options.UseSqlServer(connectionString, sqlOptions =>
             {
@@ -51,5 +32,8 @@ public static class ServiceCollectionExtensions
 
             configureOptions?.Invoke(options);
         });
+        services.AddScoped<IDemoDbContext>(e => e.GetRequiredService<DemoDbContext>());
+
+        return services;
     }
 }
