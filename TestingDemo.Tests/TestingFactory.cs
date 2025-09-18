@@ -5,7 +5,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using TestingDemo.Entities;
@@ -88,7 +87,8 @@ public static class TestingFactory
             // TODO: get the connection string from configuration so tests can be run in a pipeline
             var connectionString = "Server=localhost; Integrated Security=True; Encrypt=True; TrustServerCertificate=True; Database=TestDatabase;";
             var options = new DbContextOptionsBuilder<DemoDbContext>()
-                .UseSqlServer(connectionString, options => {
+                .UseSqlServer(connectionString, options =>
+                {
                     var assemblyName = typeof(DemoDbContextFactory).Assembly.GetName().Name;
                     options.MigrationsAssembly(assemblyName);
                 })
