@@ -82,7 +82,7 @@ graph TD
     - `DatabaseObjectSyncResult` - Result tracking for sync operations
   - **Embedded SQL Resources**:
     - `StoredProcedures/` - SQL stored procedure definitions as embedded resources
-    - `Views/` - SQL view definitions as embedded resources  
+    - `Views/` - SQL view definitions as embedded resources
     - `Functions/` - SQL function definitions as embedded resources (folder structure ready)
   - **Features**:
     - Automatic synchronization of database objects from embedded SQL files
@@ -99,8 +99,13 @@ graph TD
   - **Custom Test Infrastructure**:
     - `TestingDemoWebApplicationFactory` - Custom WebApplicationFactory for integration tests
     - `TestingFactory` - Helper factory for test session creation
-    - `TestUsers` - Predefined test user data
+    - `TestUsers` - Predefined test user data with Admin and User roles
+    - `TestingSeed` - Database seeding service for test data initialization
     - `HttpExtensions` - HTTP helper methods for testing
+  - **Test Data Management**:
+    - Automated test database seeding with predefined users and dashboards
+    - SQL Server identity insert handling for consistent test data IDs
+    - Test user scenarios including active/inactive states and role-based testing
   - **Test Categories**:
     - User CRUD operations testing
     - Authentication & Authorization testing
@@ -108,7 +113,7 @@ graph TD
     - Email service mocking and verification
     - Database state verification
 - **Testing Stack**: xUnit, Fluent Assertions, Moq for mocking, ASP.NET Core Testing framework
-- **Database**: Entity Framework In-Memory provider for isolated testing
+- **Database**: Entity Framework UseSqlServer provider with dedicated test database and automated seeding
 
 ### 🔗 Dependency Flow
 
@@ -128,7 +133,7 @@ graph LR
         G[FastEndpoints] --> B
         H[JWT Bearer] --> A
         I[xUnit + Fluent Assertions + Moq] --> D
-        J[In-Memory Database] --> D
+        J[SQL Server + Test Data Seeding] --> D
         K[EF Migrations + SQL Server] --> E
     end
 ```
@@ -157,8 +162,8 @@ graph LR
 
 ### Comprehensive Testing Strategy
 - **Integration Testing**: Full HTTP request/response testing
-- **Test Data Management**: Consistent test user setup
-- **Database Isolation**: In-memory database for clean testing
+- **Test Data Management**: Consistent test user setup with automated seeding
+- **Database Integration**: SQL Server database for realistic testing scenarios
 - **Service Mocking**: Mocking external services (email)
 - **Authentication Testing**: Authorized and unauthorized scenarios
 - **Validation Testing**: Comprehensive input validation scenarios
@@ -169,6 +174,8 @@ graph LR
 - **Theory-based Testing**: Parameterized tests for multiple scenarios
 - **Custom Test Infrastructure**: Reusable test setup and utilities
 - **Environment Isolation**: Separate testing environment configuration
+- **Test Data Seeding**: Automated database initialization with consistent test data
+- **SQL Server Testing**: Full database integration testing with dedicated test database
 
 ## 🛠️ Technologies & Frameworks
 
