@@ -112,15 +112,6 @@ public class GetDashboardsTests
         // Arrange
         var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
 
-        // Create a dashboard to ensure we have data
-        var createCommand = new CreateDashboardCommand
-        {
-            Name = "Analytics Dashboard",
-            Description = "Dashboard for analytics"
-        };
-        var createResponse = await session.Api.PostAsJsonAsync("/api/dashboards", createCommand);
-        var createdDashboard = await createResponse.Content.ReadFromJsonAsync<CreateDashboardCommandResponse>();
-
         // Act
         var response = await session.Api.GetAsync("/api/dashboards");
 
@@ -130,11 +121,15 @@ public class GetDashboardsTests
         var dashboards = await response.Content.ReadFromJsonAsync<IEnumerable<DashboardResponse>>();
         dashboards.ShouldNotBeNull();
 
-        var dashboard = dashboards.FirstOrDefault(d => d.Id == createdDashboard.Id);
-        dashboard.ShouldNotBeNull();
-        dashboard.Id.ShouldBe(createdDashboard.Id);
-        dashboard.Name.ShouldBe(createCommand.Name);
-        dashboard.CreatedAt.ShouldBeInRange(DateTime.UtcNow.AddMinutes(-1), DateTime.UtcNow.AddMinutes(1));
+        var adminDashboard = dashboards.FirstOrDefault(d => d.Id == 1);
+        adminDashboard.ShouldNotBeNull();
+        adminDashboard.Name.ShouldBe("Admin Dashboard");
+        adminDashboard.CreatedAt.ShouldBeInRange(DateTime.UtcNow.AddMinutes(-5), DateTime.UtcNow.AddMinutes(1));
+
+        var userDashboard = dashboards.FirstOrDefault(d => d.Id == 2);
+        userDashboard.ShouldNotBeNull();
+        userDashboard.Name.ShouldBe("User Dashboard");
+        userDashboard.CreatedAt.ShouldBeInRange(DateTime.UtcNow.AddMinutes(-5), DateTime.UtcNow.AddMinutes(1));
     }
 
     /// <summary>

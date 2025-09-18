@@ -63,12 +63,14 @@ public static class TestingSeed
                 new Dashboard
                 {
                     Id = 1,
-                    Name = "Admin Dashboard"
+                    Name = "Admin Dashboard",
+                    CreatedAt = DateTime.UtcNow,
                 },
                 new Dashboard
                 {
                     Id = 2,
-                    Name = "User Dashboard"
+                    Name = "User Dashboard",
+                    CreatedAt = DateTime.UtcNow,
                 }
             ]);
             await context.SaveChangesAsync(token);
