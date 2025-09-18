@@ -6,7 +6,7 @@ namespace TestingDemo.Entities.Migrations;
 /// <summary>
 /// Base class for database object synchronization results.
 /// </summary>
-public class DatabaseObjectSyncResult
+public class SyncResult
 {
     /// <summary>
     /// Number of objects created.
@@ -32,7 +32,7 @@ public class DatabaseObjectSyncResult
     /// Adds the counts from another sync result to this one.
     /// </summary>
     /// <param name="other">The other sync result to add</param>
-    public void Add(DatabaseObjectSyncResult other)
+    public void Add(SyncResult other)
     {
         if (other != null)
         {
@@ -48,20 +48,20 @@ public class DatabaseObjectSyncResult
 /// <summary>
 /// Result of stored procedure synchronization operation.
 /// </summary>
-public class StoredProcedureSyncResult : DatabaseObjectSyncResult
+public class StoredProcedureSyncResult : SyncResult
 {
 }
 
 /// <summary>
 /// Result of function synchronization operation.
 /// </summary>
-public class FunctionSyncResult : DatabaseObjectSyncResult
+public class FunctionSyncResult : SyncResult
 {
 }
 
 /// <summary>
 /// Result of view synchronization operation.
 /// </summary>
-public class ViewSyncResult : DatabaseObjectSyncResult
+public class ViewSyncResult : SyncResult
 {
 }

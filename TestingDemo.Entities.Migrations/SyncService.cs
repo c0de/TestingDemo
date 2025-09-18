@@ -31,7 +31,7 @@ public class SyncService
     /// <returns>Combined sync result containing counts of operations performed for all object types</returns>
     /// <exception cref="ArgumentNullException">Thrown when dbContext is null</exception>
     /// <exception cref="NotSupportedException">Thrown when database provider is not SQL Server</exception>
-    public async Task<DatabaseObjectSyncResult> SyncSqlObjectsAsync(
+    public async Task<SyncResult> SyncSqlObjectsAsync(
         DbContext dbContext,
         Assembly assembly = null,
         string resourceNamespace = null,
@@ -45,7 +45,7 @@ public class SyncService
 
         _logger.LogInformation("Starting database object synchronization (procedures, functions, views)");
 
-        var combinedResult = new DatabaseObjectSyncResult();
+        var combinedResult = new SyncResult();
 
         // Sync stored procedures
         var procedureResult = await SyncStoredProceduresAsync(dbContext, assembly, resourceNamespace, cancellationToken);
@@ -194,7 +194,7 @@ public class SyncService
         Func<DbContext, CancellationToken, Task<List<string>>> getDatabaseObjects,
         Func<DbContext, string, CancellationToken, Task> dropObject,
         string nameExtractionPattern,
-        CancellationToken cancellationToken) where T : DatabaseObjectSyncResult, new()
+        CancellationToken cancellationToken) where T : SyncResult, new()
     {
         var result = new T();
 

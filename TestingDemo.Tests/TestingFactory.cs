@@ -78,6 +78,12 @@ public static class TestingFactory
         await _initializationSemaphore.WaitAsync(cancellationToken);
         try
         {
+            // CRITICAL: Double-check pattern - check again after acquiring the lock
+            if (_sqlServerDbInitialized)
+            {
+                return;
+            }
+
             // localhost connection string for testing - using Integrated Security for local development
             var connectionString = "Server=localhost; Integrated Security=True; Encrypt=True; TrustServerCertificate=True; Database=TestDatabase;";
             var options = new DbContextOptionsBuilder<DemoDbContext>()
@@ -97,13 +103,17 @@ public static class TestingFactory
 
             // sync stored procedures, views, functions, etc.
             var result = await dbContext.SyncSqlObjectsAsync(cancellationToken: cancellationToken);
-
             if (result.ErrorCount > 0)
             {
                 throw new InvalidOperationException($"Stored procedure sync failed with {result.ErrorCount} errors");
             }
 
             _sqlServerDbInitialized = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
         }
         finally
         {

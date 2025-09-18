@@ -19,7 +19,7 @@ public class GetUserByIdTests
     public async Task Anynomous_ShouldFail()
     {
         // Arrange
-        var session = await TestingFactory.CreateAnonymousAsync();
+        using var session = await TestingFactory.CreateAnonymousAsync();
 
         // Act
         var response = await session.Api.GetAsync("/api/users/1");
@@ -35,7 +35,7 @@ public class GetUserByIdTests
     public async Task AsAdmin_ShouldPass()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
 
         // Act
         var response = await session.Api.GetAsync("/api/users/1");
@@ -55,7 +55,7 @@ public class GetUserByIdTests
     public async Task AsUser_ShouldPass()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.User5);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.User5);
 
         // Act
         var response = await session.Api.GetAsync("/api/users/1");
@@ -77,7 +77,7 @@ public class GetUserByIdTests
     public async Task AsUser_NotFound_ShouldPass(int id)
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.User5);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.User5);
 
         // Act
         var response = await session.Api.GetAsync($"/api/users/{id}");
@@ -93,7 +93,7 @@ public class GetUserByIdTests
     public async Task AsUser_Inactive_ShouldPass()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.User5);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.User5);
 
         // Act
         var response = await session.Api.GetAsync($"/api/users/{TestUsers.InactiveUser10.Id}");

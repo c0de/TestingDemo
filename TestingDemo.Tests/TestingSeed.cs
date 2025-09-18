@@ -15,51 +15,51 @@ public static class TestingSeed
     /// <summary>
     /// Seed Database with default test data.
     /// </summary>
-    /// <param name="context"></param>
+    /// <param name="dbContext"></param>
     /// <param name="arg2"></param>
-    /// <param name="token"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public static async Task SeedDatabaseAsync(DemoDbContext context, bool arg2, CancellationToken token)
+    public static async Task SeedDatabaseAsync(DemoDbContext dbContext, bool arg2, CancellationToken cancellationToken)
     {
-        await SeedUsersAsync(context, token);
-        await SeedDashboardsAsync(context, token);
+        await SeedUsersAsync(dbContext, cancellationToken);
+        await SeedDashboardsAsync(dbContext, cancellationToken);
     }
 
     /// <summary>
     /// Seeds the database with test users.
     /// </summary>
-    /// <param name="context">The database context.</param>
+    /// <param name="dbContext">The database context.</param>
     /// <param name="token">Cancellation token.</param>
-    private static async Task SeedUsersAsync(DemoDbContext context, CancellationToken token)
+    private static async Task SeedUsersAsync(DemoDbContext dbContext, CancellationToken token)
     {
-        await context.SetIdentityInsertOn("Users", token);
+        await dbContext.SetIdentityInsertOn("Users", token);
 
         try
         {
             foreach (var user in TestUsers.All)
             {
-                context.Users.Add(user);
+                dbContext.Users.Add(user);
             }
-            await context.SaveChangesAsync(token);
+            await dbContext.SaveChangesAsync(token);
         }
         finally
         {
-            await context.SetIdentityInsertOff("Users", token);
+            await dbContext.SetIdentityInsertOff("Users", token);
         }
     }
 
     /// <summary>
     /// Seeds the database with test dashboards.
     /// </summary>
-    /// <param name="context">The database context.</param>
+    /// <param name="dbContext">The database context.</param>
     /// <param name="token">Cancellation token.</param>
-    private static async Task SeedDashboardsAsync(DemoDbContext context, CancellationToken token)
+    private static async Task SeedDashboardsAsync(DemoDbContext dbContext, CancellationToken token)
     {
-        await context.SetIdentityInsertOn("Dashboards", token);
+        await dbContext.SetIdentityInsertOn("Dashboards", token);
 
         try
         {
-            context.Dashboards.AddRange([
+            dbContext.Dashboards.AddRange([
                 new Dashboard
                 {
                     Id = 1,
@@ -73,11 +73,11 @@ public static class TestingSeed
                     CreatedAt = DateTime.UtcNow,
                 }
             ]);
-            await context.SaveChangesAsync(token);
+            await dbContext.SaveChangesAsync(token);
         }
         finally
         {
-            await context.SetIdentityInsertOff("Dashboards", token);
+            await dbContext.SetIdentityInsertOff("Dashboards", token);
         }
     }
 

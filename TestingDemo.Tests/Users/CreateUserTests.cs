@@ -24,7 +24,7 @@ public class CreateUserTests
     public async Task Anynomous_ShouldFail()
     {
         // Arrange
-        var session = await TestingFactory.CreateAnonymousAsync();
+        using var session = await TestingFactory.CreateAnonymousAsync();
 
         // Act
         var response = await session.Api.PostAsJsonAsync("/api/users", new { });
@@ -40,7 +40,7 @@ public class CreateUserTests
     public async Task AsAdmin_CreateUser_ShouldPass()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
         var command = new CreateUserCommand
         {
             FirstName = "John",
@@ -66,7 +66,7 @@ public class CreateUserTests
     public async Task AsAdmin_CreateAdmin_ShouldPass()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
         var command = new CreateUserCommand
         {
             FirstName = "Test",
@@ -93,7 +93,7 @@ public class CreateUserTests
     public async Task AsUser_ShouldFail()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.User5);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.User5);
         var command = new CreateUserCommand
         {
             FirstName = "John",
@@ -115,7 +115,7 @@ public class CreateUserTests
     public async Task FirstName_Required_ShouldFail()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
 
         // Act
         var response = await session.Api.PostAsJsonAsync("/api/users", new { });
@@ -136,7 +136,7 @@ public class CreateUserTests
     public async Task LastName_Required_ShouldFail()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
 
         // Act
         var response = await session.Api.PostAsJsonAsync("/api/users", new { });
@@ -158,7 +158,7 @@ public class CreateUserTests
     public async Task Email_Required_ShouldFail()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
 
         // Act
         var response = await session.Api.PostAsJsonAsync("/api/users", new { });
@@ -183,7 +183,7 @@ public class CreateUserTests
     public async Task Email_Format_ShouldFail(string email)
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
         var command = new CreateUserCommand
         {
             FirstName = "test",
@@ -212,7 +212,7 @@ public class CreateUserTests
     public async Task Email_Exists_ShouldFail(string email)
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
         var command = new CreateUserCommand
         {
             FirstName = "test",
@@ -240,7 +240,7 @@ public class CreateUserTests
             .Returns(Task.CompletedTask)
             .Callback<System.Net.Mail.MailMessage, CancellationToken>((m, ct) => actualEmails.Add(m));
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1, services =>
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1, services =>
         {
             services.AddSingleton(emailService.Object);
         });
@@ -268,7 +268,7 @@ public class CreateUserTests
     public async Task CreateAdmin_ShouldAssignDefaultDashboards()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
         var command = new CreateUserCommand
         {
             FirstName = "Test",
@@ -299,7 +299,7 @@ public class CreateUserTests
     public async Task CreateUser_ShouldAssignDefaultDashboards()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
         var command = new CreateUserCommand
         {
             FirstName = "Test",
