@@ -1,6 +1,6 @@
 # TestingDemo
 
-A comprehensive .NET 9 testing demonstration project showcasing integration testing with xUnit, Entity Framework Core In-Memory database, and modern .NET patterns.
+A comprehensive .NET 9 testing demonstration project showcasing integration testing with xUnit, Entity Framework, Sql Server Database, and modern .NET patterns.
 
 ## Project Architecture
 
