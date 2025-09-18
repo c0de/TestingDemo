@@ -3,7 +3,6 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using TestingDemo.Entities;
 
 namespace TestingDemo.Entities.Migrations;
 
@@ -19,7 +18,7 @@ public static class ServiceCollectionExtensions
     /// <param name="connectionString">The database connection string</param>
     /// <returns>The service collection for method chaining</returns>
     public static IServiceCollection AddDemoDbContextWithMigrations(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         string connectionString)
     {
         return services.AddDbContext<DemoDbContext>(options =>
@@ -49,7 +48,7 @@ public static class ServiceCollectionExtensions
             {
                 sqlOptions.MigrationsAssembly(typeof(ServiceCollectionExtensions).Assembly.GetName().Name);
             });
-            
+
             configureOptions?.Invoke(options);
         });
     }

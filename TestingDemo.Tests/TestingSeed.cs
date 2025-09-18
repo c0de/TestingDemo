@@ -33,7 +33,7 @@ public static class TestingSeed
     private static async Task SeedUsersAsync(DemoDbContext context, CancellationToken token)
     {
         await context.SetIdentityInsertOn("Users", token);
-        
+
         try
         {
             foreach (var user in TestUsers.All)
@@ -56,7 +56,7 @@ public static class TestingSeed
     private static async Task SeedDashboardsAsync(DemoDbContext context, CancellationToken token)
     {
         await context.SetIdentityInsertOn("Dashboards", token);
-        
+
         try
         {
             context.Dashboards.AddRange([
@@ -91,7 +91,7 @@ public static class TestingSeed
         var isSqlServer = context.Database.IsSqlServer();
         if (isSqlServer)
         {
-            var command = $"SET IDENTITY_INSERT {tableName} ON";
+            var command = $"SET IDENTITY_INSERT [{tableName}] ON";
             await context.Database.ExecuteSqlRawAsync(command, cancellationToken: token);
         }
     }
@@ -108,7 +108,7 @@ public static class TestingSeed
         var isSqlServer = context.Database.IsSqlServer();
         if (isSqlServer)
         {
-            var command = $"SET IDENTITY_INSERT {tableName} OFF";
+            var command = $"SET IDENTITY_INSERT [{tableName}] OFF";
             await context.Database.ExecuteSqlRawAsync(command, cancellationToken: token);
         }
     }

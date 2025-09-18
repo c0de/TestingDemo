@@ -1,3 +1,6 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
@@ -45,6 +48,7 @@ public class CreateDashboardCommandValidator : Validator<CreateDashboardCommand>
     public CreateDashboardCommandValidator(IDemoDbContext dbContext)
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        var x = _dbContext.Dashboards;
 
         RuleFor(x => x.Name)
             .NotEmpty()

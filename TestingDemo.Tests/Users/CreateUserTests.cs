@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+using System.Net;
+using System.Net.Http.Json;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using System.Net;
-using System.Net.Http.Json;
 using TestingDemo.Api;
 using TestingDemo.Api.Users.Commands;
 
@@ -278,12 +281,15 @@ public class CreateUserTests
         await session.Api.PostAsJsonAsync("/api/users", command);
 
         // Assert
-        var dashboards = await session.Repository.Users
-            .Include(u => u.Dashboards)
-            .Where(u => u.Email == command.Email)
-            .Select(e => e.Dashboards)
-            .ToListAsync();
-        dashboards.ShouldNotBeNull();
+        using (var dbContext = session.DbContext)
+        {
+            var dashboards = await dbContext.Users
+                .Include(u => u.Dashboards)
+                .Where(u => u.Email == command.Email)
+                .Select(e => e.Dashboards)
+                .ToListAsync();
+            dashboards.ShouldNotBeNull();
+        }
     }
 
     /// <summary>
@@ -306,11 +312,14 @@ public class CreateUserTests
         await session.Api.PostAsJsonAsync("/api/users", command);
 
         // Assert
-        var dashboards = await session.Repository.Users
-            .Include(u => u.Dashboards)
-            .Where(u => u.Email == command.Email)
-            .Select(e => e.Dashboards)
-            .ToListAsync();
-        dashboards.ShouldNotBeNull();
+        using (var dbContext = session.DbContext)
+        {
+            var dashboards = await dbContext.Users
+                .Include(u => u.Dashboards)
+                .Where(u => u.Email == command.Email)
+                .Select(e => e.Dashboards)
+                .ToListAsync();
+            dashboards.ShouldNotBeNull();
+        }
     }
 }

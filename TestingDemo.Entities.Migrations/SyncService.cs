@@ -170,7 +170,7 @@ public class SyncService
         assembly ??= typeof(SyncService).Assembly;
 
         // Default namespace for embedded resources
-        resourceNamespace ??= $"{assembly.GetName(). Name}.Views";
+        resourceNamespace ??= $"{assembly.GetName().Name}.Views";
 
         _logger.LogInformation("Starting view synchronization from embedded resources in assembly: {Assembly}, namespace: {Namespace}",
             assembly.GetName().Name, resourceNamespace);

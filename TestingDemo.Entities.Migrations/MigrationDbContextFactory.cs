@@ -3,7 +3,6 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using TestingDemo.Entities;
 
 namespace TestingDemo.Entities.Migrations;
 
@@ -22,7 +21,7 @@ public class MigrationDbContextFactory : IDesignTimeDbContextFactory<DemoDbConte
     {
         // Default connection string for migrations
         var connectionString = "Server=localhost; Integrated Security=True; Encrypt=True; TrustServerCertificate=True; Database=TestDatabase;";
-        
+
         // Allow override via command line arguments
         if (args.Length > 0 && !string.IsNullOrWhiteSpace(args[0]))
         {

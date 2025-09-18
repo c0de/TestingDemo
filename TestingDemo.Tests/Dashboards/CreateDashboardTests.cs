@@ -184,13 +184,14 @@ public class CreateDashboardTests
         // Arrange
         var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
 
-        // Create first dashboard
-        var firstCommand = new CreateDashboardCommand
-        {
-            Name = "Analytics Dashboard",
-            Description = "First dashboard"
-        };
-        await session.Api.PostAsJsonAsync("/api/dashboards", firstCommand);
+        var dbContext = session.DbContext;
+        var entity = dbContext.Dashboards
+            .Add(new Entities.Models.Dashboard
+            {
+                Name = "Analytics Dashboard",
+                Description = "First dashboard"
+            }).Entity;
+        await dbContext.SaveChangesAsync();
 
         // Try to create duplicate
         var duplicateCommand = new CreateDashboardCommand
@@ -266,15 +267,18 @@ public class CreateDashboardTests
         var result = await response.Content.ReadAsJsonAsync<CreateDashboardCommandResponse>();
         result.ShouldNotBeNull();
 
-        // Verify in database
-        var dashboard = await session.Repository.Dashboards
-            .FirstOrDefaultAsync(d => d.Id == result.Id);
+        // Verify in database using a fresh context scope
+        using (var dbContext = session.DbContext)
+        {
+            var dashboard = await dbContext.Dashboards
+                .FirstOrDefaultAsync(d => d.Id == result.Id);
 
-        dashboard.ShouldNotBeNull();
-        dashboard.Name.ShouldBe(command.Name);
-        dashboard.Description.ShouldBe(command.Description);
-        dashboard.CreatedAt.ShouldBeInRange(DateTime.UtcNow.AddMinutes(-1), DateTime.UtcNow.AddMinutes(1));
-        dashboard.DeletedAt.ShouldBeNull();
+            dashboard.ShouldNotBeNull();
+            dashboard.Name.ShouldBe(command.Name);
+            dashboard.Description.ShouldBe(command.Description);
+            dashboard.CreatedAt.ShouldBeInRange(DateTime.UtcNow.AddMinutes(-1), DateTime.UtcNow.AddMinutes(1));
+            dashboard.DeletedAt.ShouldBeNull();
+        }
     }
 
     /// <summary>

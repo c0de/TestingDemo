@@ -1,9 +1,12 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+using System.Text;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using TestingDemo.Api;
 using TestingDemo.Api.Services;
 using TestingDemo.Entities;
@@ -13,11 +16,16 @@ var env = builder.Environment.EnvironmentName;
 
 // Add DbContext
 builder.Services.AddDbContext<DemoDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddScoped<IDemoDbContext>(e => {
-    return e.GetRequiredService<DemoDbContext>();
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseSqlServer(connectionString, e =>
+    {
+        e.EnableRetryOnFailure();
+        e.CommandTimeout(60); // 60 seconds
+        e.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+    });
 });
+builder.Services.AddScoped<IDemoDbContext>(e => e.GetRequiredService<DemoDbContext>());
 
 // Add services to the container.
 builder.Services.AddFastEndpoints();
