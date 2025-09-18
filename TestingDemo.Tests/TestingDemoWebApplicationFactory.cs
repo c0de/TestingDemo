@@ -3,9 +3,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using TestingDemo.Entities;
 
 namespace TestingDemo.Tests;
 
@@ -35,45 +33,6 @@ public class TestingDemoWebApplicationFactory : WebApplicationFactory<Program>
         builder.UseEnvironment(_env);
         builder.ConfigureServices(services =>
         {
-            // Remove the existing DbContext registration
-            var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<DemoDbContext>));
-            if (descriptor != null)
-            {
-                services.Remove(descriptor);
-            }
-
-            // Remove the existing IDemoDbContext registration
-            var contextDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IDemoDbContext));
-            if (contextDescriptor != null)
-            {
-                services.Remove(contextDescriptor);
-            }
-
-            // Remove the existing DemoDbContext registration
-            var demoContextDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DemoDbContext));
-            if (demoContextDescriptor != null)
-            {
-                services.Remove(demoContextDescriptor);
-            }
-
-            // Add SQL Server DbContext for testing
-            var connectionString = "Server=localhost; Integrated Security=True; Encrypt=True; TrustServerCertificate=True; Database=TestDatabase;";
-            services.AddDbContext<DemoDbContext>(options =>
-            {
-                options.UseSqlServer(connectionString, sqlOptions =>
-                {
-                    sqlOptions.EnableRetryOnFailure();
-                    sqlOptions.CommandTimeout(60);
-                    sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-                });
-                // Enable detailed errors for testing
-                options.EnableDetailedErrors();
-                options.EnableSensitiveDataLogging();
-            });
-
-            // Register the interface
-            services.AddScoped<IDemoDbContext>(provider => provider.GetRequiredService<DemoDbContext>());
-
             // invoke overrides
             _serviceAction?.Invoke(services);
         });

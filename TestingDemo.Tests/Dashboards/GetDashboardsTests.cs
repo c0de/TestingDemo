@@ -21,7 +21,7 @@ public class GetDashboardsTests
     public async Task Anonymous_ShouldFail()
     {
         // Arrange
-        var session = await TestingFactory.CreateAnonymousAsync();
+        using var session = await TestingFactory.CreateAnonymousAsync();
 
         // Act
         var response = await session.Api.GetAsync("/api/dashboards");
@@ -37,7 +37,7 @@ public class GetDashboardsTests
     public async Task AsAdmin_ShouldPass()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
 
         // Act
         var response = await session.Api.GetAsync("/api/dashboards");
@@ -56,7 +56,7 @@ public class GetDashboardsTests
     public async Task AsUser_ShouldPass()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.User5);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.User5);
 
         // Act
         var response = await session.Api.GetAsync("/api/dashboards");
@@ -75,7 +75,7 @@ public class GetDashboardsTests
     public async Task DeletedDashboards_ShouldNotBeReturned()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
 
         // Create a dashboard
         var createCommand = new CreateDashboardCommand
@@ -110,7 +110,7 @@ public class GetDashboardsTests
     public async Task ResponseFormat_ShouldBeCorrect()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
 
         // Act
         var response = await session.Api.GetAsync("/api/dashboards");
@@ -139,7 +139,7 @@ public class GetDashboardsTests
     public async Task MultipleDashboards_ShouldReturnAll()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
 
         // Act
         var response = await session.Api.GetAsync("/api/dashboards");

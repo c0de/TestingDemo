@@ -19,7 +19,7 @@ public class GetUsersTests
     public async Task Anynomous_ShouldFail()
     {
         // Arrange
-        var session = await TestingFactory.CreateAnonymousAsync();
+        using var session = await TestingFactory.CreateAnonymousAsync();
 
         // Act
         var response = await session.Api.GetAsync("/api/users");
@@ -35,7 +35,7 @@ public class GetUsersTests
     public async Task AsAdmin_ShouldPass()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
 
         // Act
         var response = await session.Api.GetAsync("/api/users");
@@ -55,7 +55,7 @@ public class GetUsersTests
     public async Task AsUser_ShouldPass()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.User6);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.User6);
 
         // Act
         var response = await session.Api.GetAsync("/api/users");

@@ -18,7 +18,7 @@ public class DeleteUserTests
     public async Task Anynomous_ShouldFail()
     {
         // Arrange
-        var session = await TestingFactory.CreateAnonymousAsync();
+        using var session = await TestingFactory.CreateAnonymousAsync();
 
         // Act
         var response = await session.Api.DeleteAsync("/api/users/1");
@@ -34,7 +34,7 @@ public class DeleteUserTests
     public async Task AsUser_ShouldFail()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.User6);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.User6);
 
         // Act
         var response = await session.Api.DeleteAsync($"/api/users/1");
@@ -51,7 +51,7 @@ public class DeleteUserTests
     {
         // Arrange
         var userId = TestUsers.User5.Id;
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
 
         // Act
         var response = await session.Api.DeleteAsync($"/api/users/{userId}");

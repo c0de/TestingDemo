@@ -15,7 +15,7 @@ public class UpdateUserTests
     public async Task Anynomous_ShouldFail()
     {
         // Arrange
-        var session = await TestingFactory.CreateAnonymousAsync();
+        using var session = await TestingFactory.CreateAnonymousAsync();
 
         // Act
         var response = await session.Api.PutAsJsonAsync("/api/users", new { });

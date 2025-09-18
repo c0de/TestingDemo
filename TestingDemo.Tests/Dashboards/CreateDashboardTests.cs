@@ -21,7 +21,7 @@ public class CreateDashboardTests
     public async Task Anonymous_ShouldFail()
     {
         // Arrange
-        var session = await TestingFactory.CreateAnonymousAsync();
+        using var session = await TestingFactory.CreateAnonymousAsync();
 
         // Act
         var response = await session.Api.PostAsJsonAsync("/api/dashboards", new { });
@@ -37,7 +37,7 @@ public class CreateDashboardTests
     public async Task AsAdmin_CreateDashboard_ShouldPass()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
         var command = new CreateDashboardCommand
         {
             Name = $"Test-{Guid.NewGuid().ToString()}",
@@ -62,7 +62,7 @@ public class CreateDashboardTests
     public async Task AsAdmin_CreateDashboardOnlyName_ShouldPass()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
         var command = new CreateDashboardCommand
         {
             Name = "Simple Dashboard"
@@ -86,7 +86,7 @@ public class CreateDashboardTests
     public async Task AsUser_ShouldFail()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.User5);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.User5);
         var command = new CreateDashboardCommand
         {
             Name = "User Dashboard",
@@ -107,7 +107,7 @@ public class CreateDashboardTests
     public async Task Name_Required_ShouldFail()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
 
         // Act
         var response = await session.Api.PostAsJsonAsync("/api/dashboards", new { });
@@ -128,7 +128,7 @@ public class CreateDashboardTests
     public async Task Name_TooLong_ShouldFail()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
         var command = new CreateDashboardCommand
         {
             Name = new string('A', 101), // 101 characters, exceeds max of 100
@@ -155,7 +155,7 @@ public class CreateDashboardTests
     public async Task Description_TooLong_ShouldFail()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
         var command = new CreateDashboardCommand
         {
             Name = "Valid Dashboard",
@@ -182,7 +182,7 @@ public class CreateDashboardTests
     public async Task DuplicateName_ShouldFail()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
 
         var dbContext = session.DbContext;
         var entity = dbContext.Dashboards
@@ -226,7 +226,7 @@ public class CreateDashboardTests
     public async Task ValidDashboardNames_ShouldPass(string dashboardName)
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
         var command = new CreateDashboardCommand
         {
             Name = dashboardName,
@@ -251,7 +251,7 @@ public class CreateDashboardTests
     public async Task CreateDashboard_ShouldPersistInDatabase()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
         var command = new CreateDashboardCommand
         {
             Name = "Test Persistence Dashboard",
@@ -288,7 +288,7 @@ public class CreateDashboardTests
     public async Task CreateDashboard_ShouldReturnCorrectLocation()
     {
         // Arrange
-        var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
+        using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
         var command = new CreateDashboardCommand
         {
             Name = "Location Test Dashboard",
