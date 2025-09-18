@@ -189,3 +189,4 @@ graph LR
 - [Fast Endpoints](http://fast-endpoints.com/)
 - [Fluent Assertions](https://fluentassertions.com)
 - [Entity Framework Migrations](https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/)
+- [Shouldly](https://docs.shouldly.org/)

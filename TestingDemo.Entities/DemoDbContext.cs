@@ -19,8 +19,12 @@ public class DemoDbContext : DbContext, IDemoDbContext
     {
     }
 
+    // Tables
     public DbSet<User> Users { get; set; }
     public DbSet<Dashboard> Dashboards { get; set; }
+
+    // Views
+    public DbSet<ActiveUsersView> ActiveUsersView { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -9,20 +9,23 @@ using TestingDemo.Entities;
 namespace TestingDemo.Api.Users.Queries;
 
 /// <summary>
-/// Get all users.
+/// Get all active users.
 /// </summary>
-public class GetUsersQuery : EndpointWithoutRequest<IEnumerable<UserResponse>>
+/// <remarks>
+/// Example showing that we can return the results of a view.
+/// </remarks>
+public class GetActiveUsersQuery : EndpointWithoutRequest<IEnumerable<UserResponse>>
 {
     private readonly IDemoDbContext _dbContext;
 
-    public GetUsersQuery(IDemoDbContext dbContext)
+    public GetActiveUsersQuery(IDemoDbContext dbContext)
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
     public override void Configure()
     {
-        Get("/api/users");
+        Get("/api/activeusers");
         Description(x => x
             .Produces<UserResponse>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
@@ -31,8 +34,7 @@ public class GetUsersQuery : EndpointWithoutRequest<IEnumerable<UserResponse>>
 
     public override async Task HandleAsync(CancellationToken cancellationToken)
     {
-        var users = await _dbContext.Users
-            .AsNoTracking()
+        var users = await _dbContext.ActiveUsersView
             .Select(e => new UserResponse
             {
                 Id = e.Id,

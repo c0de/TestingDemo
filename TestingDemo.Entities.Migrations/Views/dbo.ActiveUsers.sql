@@ -1,3 +1,7 @@
+/**
+ * View that returns all active users
+ * @version 1.0
+ */
 CREATE OR ALTER VIEW dbo.[ActiveUsers]
 WITH SCHEMABINDING
 AS

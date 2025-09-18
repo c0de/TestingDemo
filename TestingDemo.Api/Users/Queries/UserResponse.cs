@@ -25,4 +25,8 @@ public class UserResponse
     /// DateTime the user was created.
     /// </summary>
     public DateTime CreatedAt { get; set; }
+    /// <summary>
+    /// Indicates if the user is active (not deleted).
+    /// </summary>
+    public bool IsActive { get; set; }
 }
