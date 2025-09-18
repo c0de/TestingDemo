@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using TestingDemo.Entities.Models;
 
@@ -26,6 +27,7 @@ public class DemoDbContext : DbContext, IDemoDbContext
     // Views
     public DbSet<ActiveUsersView> ActiveUsersView { get; set; }
 
+    /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -33,15 +35,11 @@ public class DemoDbContext : DbContext, IDemoDbContext
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DemoDbContext).Assembly);
     }
 
-    /// <summary>
-    /// Executes the given SQL against the database and returns the number of rows affected.
-    /// </summary>
-    /// <param name="sql">The SQL to execute.</param>
-    /// <param name="timeoutInSeconds">Command timeout in seconds.</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    /// <exception cref="NotSupportedException"></exception>
-    public async Task<int> ExecuteAsync(string sql, int timeoutInSeconds, CancellationToken cancellationToken = default)
+    /// <inheritdoc/>
+    public async Task<int> ExecuteAsync(string sql,
+        int timeoutInSeconds,
+        SqlParameter[] parameters = null,
+        CancellationToken cancellationToken = default)
     {
         if (!Database.IsSqlServer())
         {
@@ -50,7 +48,7 @@ public class DemoDbContext : DbContext, IDemoDbContext
 
         Database.SetCommandTimeout(timeoutInSeconds);
 
-        return await Database.ExecuteSqlRawAsync(sql, cancellationToken);
+        return await Database.ExecuteSqlRawAsync(sql, parameters, cancellationToken);
     }
 
     /// <summary>

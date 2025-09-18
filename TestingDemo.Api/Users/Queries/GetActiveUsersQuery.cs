@@ -25,7 +25,7 @@ public class GetActiveUsersQuery : EndpointWithoutRequest<IEnumerable<UserRespon
 
     public override void Configure()
     {
-        Get("/api/activeusers");
+        Get("/api/users/getactive");
         Description(x => x
             .Produces<UserResponse>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)

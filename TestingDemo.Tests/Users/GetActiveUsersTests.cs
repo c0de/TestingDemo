@@ -25,7 +25,7 @@ public class GetActiveUsersTests
         using var session = await TestingFactory.CreateAnonymousAsync();
 
         // Act
-        var response = await session.Api.GetAsync("/api/activeusers");
+        var response = await session.Api.GetAsync("/api/users/getactive");
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -41,7 +41,7 @@ public class GetActiveUsersTests
         using var session = await TestingFactory.CreateForUserAsync(TestUsers.Admin1);
 
         // Act
-        var response = await session.Api.GetAsync("/api/activeusers");
+        var response = await session.Api.GetAsync("/api/users/getactive");
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -65,7 +65,7 @@ public class GetActiveUsersTests
         using var session = await TestingFactory.CreateForUserAsync(TestUsers.User6);
 
         // Act
-        var response = await session.Api.GetAsync("/api/activeusers");
+        var response = await session.Api.GetAsync("/api/users/getactive");
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);

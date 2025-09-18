@@ -3,6 +3,7 @@
  * @version 1.0
  */
 CREATE OR ALTER PROCEDURE dbo.[Process_Users]
+    @JobDetailId INT
 AS
 BEGIN
 
