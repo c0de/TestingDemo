@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -8,10 +8,15 @@
 
   <ItemGroup>
     <PackageReference Include="FastEndpoints" Version="7.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TestingDemo.Entities\TestingDemo.Entities.csproj" />
+    <ProjectReference Include="..\TestingDemo.Entities.Migrations\TestingDemo.Entities.Migrations.csproj" />
   </ItemGroup>
 
 </Project>

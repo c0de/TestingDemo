@@ -1,101 +1,140 @@
-# Entity Framework Migrations for TestingDemo
+# Entity Framework Migrations
 
-This project contains Entity Framework Code First migrations for the TestingDemo application. The DbContext and entities are defined in the `TestingDemo.Entities` project, while migrations, stored procedures, functions, and views are managed here.
+This project contains the Entity Framework migrations for the TestingDemo application.
 
 ## Project Structure
 
-```
-TestingDemo.Entities.Migrations/
-??? Migrations/              # EF Core migration files (auto-generated)
-??? StoredProcedures/        # SQL files for stored procedures
-??? Functions/               # SQL files for functions  
-??? Views/                   # SQL files for views
-??? MigrationDbContextFactory.cs  # Design-time factory for migrations
-??? SyncService.cs           # Service for syncing SQL objects
-??? DbContextExtensions.cs   # Extension methods for DbContext
-??? DatabaseObjectSyncResult.cs  # Result classes for sync operations
-```
+- **TestingDemo.Entities**: Contains the `DemoDbContext` and entity models
+- **TestingDemo.Entities.Migrations**: Contains migrations, design-time factory, and database sync utilities
 
-## Working with Migrations
+## Prerequisites
 
-### Prerequisites
-Make sure you have the Entity Framework Core tools installed:
+- .NET 9 SDK
+- SQL Server (LocalDB, SQL Server Express, or full SQL Server)
+- Entity Framework Core tools
+
+## Install EF Tools (if not already installed)
+
 ```bash
 dotnet tool install --global dotnet-ef
 ```
 
-### Adding a New Migration
+## Working with Migrations
+
+### Creating a New Migration
+
 Navigate to the solution root and run:
+
 ```bash
-dotnet ef migrations add <MigrationName> --project TestingDemo.Entities.Migrations --startup-project <YourStartupProject>
+# Create a migration
+dotnet ef migrations add <MigrationName> --project TestingDemo.Entities.Migrations
+
+# Example
+dotnet ef migrations add InitialCreate --project TestingDemo.Entities.Migrations
 ```
 
-Example:
+### Applying Migrations
+
 ```bash
-dotnet ef migrations add InitialCreate --project TestingDemo.Entities.Migrations --startup-project TestingDemo.Api
+# Update database to latest migration
+dotnet ef database update --project TestingDemo.Entities.Migrations
+
+# Update to specific migration
+dotnet ef database update <MigrationName> --project TestingDemo.Entities.Migrations
 ```
 
-### Updating the Database
+### Other Useful Commands
+
 ```bash
-dotnet ef database update --project TestingDemo.Entities.Migrations --startup-project <YourStartupProject>
+# List all migrations
+dotnet ef migrations list --project TestingDemo.Entities.Migrations
+
+# Remove last migration (if not applied to database)
+dotnet ef migrations remove --project TestingDemo.Entities.Migrations
+
+# Generate SQL script from migrations
+dotnet ef migrations script --project TestingDemo.Entities.Migrations
+
+# Drop database
+dotnet ef database drop --project TestingDemo.Entities.Migrations
 ```
 
-### Removing the Last Migration
+### Using the PowerShell Helper Script
+
+For convenience, you can use the provided `migrate.ps1` script:
+
 ```bash
-dotnet ef migrations remove --project TestingDemo.Entities.Migrations --startup-project <YourStartupProject>
+# Create a migration
+.\migrate.ps1 add MyMigrationName
+
+# Update database
+.\migrate.ps1 update
+
+# List migrations
+.\migrate.ps1 list
+
+# Remove last migration
+.\migrate.ps1 remove
+
+# Drop database (with confirmation)
+.\migrate.ps1 drop
 ```
 
-### Listing Migrations
+## Connection String Configuration
+
+The `DemoDbContextFactory` looks for connection strings in this order:
+
+1. **Command Line**: `--connection-string "your-connection-string"`
+2. **Environment Variable**: `MIGRATION_CONNECTION_STRING`
+3. **Default**: `Server=localhost;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;Database=TestingDemoDev;`
+
+### Examples
+
 ```bash
-dotnet ef migrations list --project TestingDemo.Entities.Migrations --startup-project <YourStartupProject>
+# Using command line
+dotnet ef migrations add MyMigration --project TestingDemo.Entities.Migrations -- --connection-string "Server=localhost;Database=MyTestDb;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"
+
+# Using environment variable
+set MIGRATION_CONNECTION_STRING=Server=localhost;Database=MyTestDb;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;
+dotnet ef migrations add MyMigration --project TestingDemo.Entities.Migrations
+
+# Using PowerShell script with custom connection string
+.\migrate.ps1 add MyMigration -ConnectionString "Server=localhost;Database=MyTestDb;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;"
 ```
-
-## Configuration in Startup/Program.cs
-
-When configuring your DbContext in your application (API, Web, etc.), use the helper method:
-
-```csharp
-// In Program.cs or Startup.cs
-services.AddDbContext<DemoDbContext>(options =>
-{
-    DemoDbContext.ConfigureForSqlServer(
-        new DbContextOptionsBuilder<DemoDbContext>(), 
-        connectionString
-    );
-});
-```
-
-## SQL Objects (Stored Procedures, Functions, Views)
-
-This project also manages SQL objects through embedded resources:
-
-- **StoredProcedures/**: Contains `.sql` files for stored procedures
-- **Functions/**: Contains `.sql` files for functions
-- **Views/**: Contains `.sql` files for views
-
-Use the `SyncService` to synchronize these objects with your database:
-
-```csharp
-var syncService = new SyncService(logger);
-await syncService.SyncSqlObjectsAsync(dbContext);
-```
-
-## Connection String
-
-The default connection string used for migrations is:
-```
-Server=localhost; Integrated Security=True; Encrypt=True; TrustServerCertificate=True; Database=TestDatabase;
-```
-
-You can override this by passing it as a command line argument to the migration commands or by modifying the `MigrationDbContextFactory.cs` file.
 
 ## Troubleshooting
 
-### "Unable to create an object of type 'DemoDbContext'"
-This error typically occurs when EF Core cannot find a design-time factory. Make sure:
-1. The `MigrationDbContextFactory` is in the migrations project
-2. You're specifying the correct `--project` parameter
-3. The connection string is valid
+### Common Issues
 
-### Migrations appear in wrong project
-Ensure you're using the `--project TestingDemo.Entities.Migrations` parameter in your EF Core commands.
+1. **"Unable to create an object of type 'DemoDbContext'"**
+   - Ensure the `DemoDbContextFactory` is in the migrations project
+   - Check that the connection string is valid
+
+2. **"The Entity Framework tools version is older than that of the runtime"**
+   - Update EF tools: `dotnet tool update --global dotnet-ef`
+
+3. **Connection issues**
+   - Verify SQL Server is running
+   - Check connection string format
+   - Ensure database permissions
+
+### Verify Setup
+
+Test your setup by running:
+
+```bash
+dotnet ef migrations list --project TestingDemo.Entities.Migrations
+```
+
+If this runs without errors, your migrations setup is working correctly.
+
+## Integration with Your Application
+
+Your application should use the `DemoDbContext.ConfigureForSqlServer` method to ensure consistency:
+
+```csharp
+// In your application startup
+services.AddDbContext<DemoDbContext>(options =>
+{
+    DemoDbContext.ConfigureForSqlServer(options, connectionString);
+});

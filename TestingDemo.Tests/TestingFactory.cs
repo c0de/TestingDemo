@@ -86,20 +86,22 @@ public static class TestingFactory
 
             // localhost connection string for testing - using Integrated Security for local development
             var connectionString = "Server=localhost; Integrated Security=True; Encrypt=True; TrustServerCertificate=True; Database=TestDatabase;";
-            var options = new DbContextOptionsBuilder<DemoDbContext>()
-                .UseSqlServer(connectionString)
-                .UseAsyncSeeding(TestingSeed.SeedDatabaseAsync)
-                .Options;
-            using var dbContext = new DemoDbContext(options);
+            
+            // Use the same configuration method as in production to ensure consistency
+            var optionsBuilder = new DbContextOptionsBuilder<DemoDbContext>();
+            DemoDbContext.ConfigureForSqlServer(optionsBuilder, connectionString);
+            optionsBuilder.UseAsyncSeeding(TestingSeed.SeedDatabaseAsync);
+            
+            using var dbContext = new DemoDbContext(optionsBuilder.Options);
 
             // drop the database so we can create and seed
             await dbContext.Database.EnsureDeletedAsync(cancellationToken);
 
-            // recommended for simple setup
-            await dbContext.Database.EnsureCreatedAsync(cancellationToken);
+            // create the database isomg ef core configuration
+            //await dbContext.Database.EnsureCreatedAsync(cancellationToken);
 
             // ef-migrations
-            //await dbContext.Database.MigrateAsync(cancellationToken);
+            await dbContext.Database.MigrateAsync(cancellationToken);
 
             // sync stored procedures, views, functions, etc.
             var result = await dbContext.SyncSqlObjectsAsync(cancellationToken: cancellationToken);
