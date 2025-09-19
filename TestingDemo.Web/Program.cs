@@ -30,6 +30,8 @@ builder.Services.AddScoped<IDemoDbContext>(e => e.GetRequiredService<DemoDbConte
 // Add services to the container.
 builder.Services.AddFastEndpoints();
 builder.Services.TryAddScoped<IEmailService, EmailService>();
+builder.Services.TryAddScoped<IAssetService, AssetService>();
+builder.Services.TryAddScoped<ITemplateService, TemplateService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
