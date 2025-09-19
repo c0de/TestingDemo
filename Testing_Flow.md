@@ -19,77 +19,54 @@ graph TD
     A[Test Method Starts] --> B{Test Type?}
     B -->|Anonymous| C[TestingFactory.CreateAnonymousAsync]
     B -->|Authenticated| D[TestingFactory.CreateForUserAsync]
+    B -->|Client Credentials| E[TestingFactory.CreateForClientCredentialsAsync]
     
-    %% Factory Creation
-    C --> E[Create TestingDemoWebApplicationFactory]
-    D --> E
-    E --> F[Configure Web Host]
-    F --> G[Set Environment = 'Testing']
-    F --> H[Apply Service Overrides]
+    %% Setup Phase
+    C --> F[Setup WebApplicationFactory<br/>& Configure Testing Environment]
+    D --> F
+    E --> F
+    F --> G{Database Initialized?}
+    G -->|No| H[Acquire Semaphore Lock<br/>_initializationSemaphore.WaitAsync]
+    G -->|Yes| L[Create TestingInstance]
+    H --> I{Double-Check<br/>Database Initialized?}
+    I -->|No| J[Initialize Test Database<br/>Drop/Create + Migrations + Seed Data]
+    I -->|Yes| K[Release Semaphore Lock]
+    J --> K
+    K --> L
     
-    %% Database Initialization (One-time per test run)
-    E --> I{Database Initialized?}
-    I -->|No| J[Acquire Semaphore Lock]
-    I -->|Yes| S[Create TestingInstance]
+    %% Test Execution Phase
+    L --> M[Test Calls session.Api]
+    M --> N{Authentication Required?}
+    N -->|Anonymous| O[Create Anonymous HttpClient]
+    N -->|User Auth| P[Generate JWT Token for User<br/>& Create Authenticated HttpClient]
+    N -->|Client Credentials| Q[Generate JWT Token for Service<br/>& Create Authenticated HttpClient]
     
-    J --> K[Get Connection String from appsettings.Testing.json]
-    K --> L[Create DbContext with SQL Server]
-    L --> M[Drop Existing Database]
-    M --> N[Run EF Migrations]
-    N --> O[Sync SQL Objects<br/>Stored Procs, Views, Functions]
-    O --> P[Seed Database via TestingSeed]
+    %% API Interaction
+    O --> R[Execute HTTP Request<br/>Against API Endpoints]
+    P --> R
+    Q --> R
     
-    %% Database Seeding
-    P --> Q[Seed Users from TestUsers.All]
-    Q --> R[Seed Dashboards]
-    R --> S
-    
-    %% TestingInstance Creation
-    S --> T[Create TestingInstance Object]
-    T --> U[Set WebApplicationFactory Reference]
-    T --> V{User Provided?}
-    V -->|Yes| W[Set User Property]
-    V -->|No| X[Leave User as null]
-    W --> Y[Return TestingInstance]
-    X --> Y
-    
-    %% Test Execution
-    Y --> Z[Test Uses session.Api Property]
-    Z --> AA[TestingInstance.Api getter called]
-    AA --> BB[Create HttpClient from Factory]
-    BB --> CC{User Present?}
-    CC -->|Yes| DD[Generate JWT Token]
-    CC -->|No| EE[Return Unauthenticated Client]
-    
-    DD --> FF[Add Claims: Sub, Email, Role, Jti]
-    FF --> GG[Sign with HMAC SHA256]
-    GG --> HH[Set Authorization Header]
-    HH --> II[Return Authenticated HttpClient]
-    
-    EE --> JJ[Execute HTTP Request]
-    II --> JJ
-    
-    %% Database Verification
-    JJ --> KK[Test May Access session.DbContext]
-    KK --> LL[Create New Scope]
-    LL --> MM[Get Fresh DbContext Instance]
-    MM --> NN[Verify Database State]
+    %% Verification Phase
+    R --> S[Test Verification]
+    S --> T[Optional: Database State Check<br/>via session.DbContext]
     
     %% Cleanup
-    NN --> OO[Test Completes]
-    OO --> PP[Dispose TestingInstance]
-    PP --> QQ[WebApplicationFactory Disposed]
+    T --> U[Test Completes & Cleanup]
 
     %% Styling
-    classDef factory fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
-    classDef database fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
-    classDef auth fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef setup fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef execution fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef verification fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
     classDef test fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef clientcreds fill:#fff8e1,stroke:#ff8f00,stroke-width:2px
+    classDef semaphore fill:#ffebee,stroke:#c62828,stroke-width:3px
     
-    class E,F,G,H,T,U factory
-    class I,J,K,L,M,N,O,P,Q,R,KK,LL,MM,NN database
-    class CC,DD,FF,GG,HH,II auth
-    class A,Y,Z,JJ,OO,PP,QQ test
+    class F,G,L setup
+    class H,I,J,K semaphore
+    class M,N,O,P,Q,R execution
+    class S,T verification
+    class A,B,C,D,E,U test
+    class E,Q clientcreds
 ```
 
 ## 📁 Project Structure
@@ -116,18 +93,24 @@ TestingDemo.Tests/
 - Allows service collection overrides for mocking
 
 ### 2. **TestingFactory** 
-- Static factory with two creation methods:
+- Static factory with three creation methods:
   - `CreateAnonymousAsync()` - For unauthenticated tests
   - `CreateForUserAsync(User)` - For authenticated tests with specific user
+  - `CreateForClientCredentialsAsync()` - For service-to-service authentication (background jobs, services, etc.)
 - Handles database initialization with singleton pattern and semaphore locking
 - Ensures database is created only once per test run
 
 ### 3. **Database Initialization Process**
 - Uses SQL Server with dedicated test database
+- **Thread-Safe Initialization**: Protected by `SemaphoreSlim` with double-check locking pattern
+  - First check: Quick verification if database is already initialized
+  - Semaphore acquisition: Ensures only one thread can initialize at a time
+  - Second check: Double-check pattern after acquiring lock to prevent race conditions
 - Drops and recreates database for clean state
 - Runs EF Core migrations
 - Syncs stored procedures, views, and functions
 - Seeds with predefined test data via `TestingSeed`
+- **Singleton Pattern**: Database initialized only once per test run, shared across all tests
 
 ### 4. **Test Data Setup**
 - **TestUsers**: Predefined users (Admin1, User5, InactiveUser10, etc.)
@@ -215,6 +198,22 @@ public async Task AsAdmin_ShouldSendEmail()
     // Act & Assert
     await session.Api.PostAsJsonAsync("/api/users", command);
     emailService.Verify(e => e.SendEmailAsync(It.IsAny<MailMessage>(), It.IsAny<CancellationToken>()), Times.Once);
+}
+```
+
+### Client Credentials Flow Testing
+```csharp
+[Fact]
+public async Task BackgroundService_ShouldProcessData()
+{
+    // Arrange - Test background service or job functionality
+    using var session = await TestingFactory.CreateForClientCredentialsAsync();
+
+    // Act - Call API endpoint that would be used by background services
+    var response = await session.Api.PostAsJsonAsync("/api/background/process-data", new { });
+
+    // Assert
+    response.StatusCode.ShouldBe(HttpStatusCode.OK);
 }
 ```
 

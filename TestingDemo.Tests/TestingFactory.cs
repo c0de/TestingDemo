@@ -1,13 +1,9 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using TestingDemo.Entities;
 using TestingDemo.Entities.Migrations;
 using TestingDemo.Entities.Models;
@@ -60,6 +56,31 @@ public static class TestingFactory
         return new TestingInstance
         {
             User = user,
+            WebApplicationFactory = webFactory,
+        };
+    }
+
+    /// <summary>
+    /// Create a test instance using the Client Credentials flow.
+    /// </summary>
+    /// <remarks>
+    /// This is for background services, jobs, etc. that do not have a user context.
+    /// ** TODO: set this up properly as this is just a placeholder for demo purposes **
+    /// </remarks>
+    /// <param name="action">service collection action</param>
+    /// <param name="env">environment to create</param>
+    /// <returns></returns>
+    public static async Task<TestingInstance> CreateForClientCredentialsAsync(Action<IServiceCollection>? action = null,
+        string? env = null,
+        CancellationToken cancellationToken = default)
+    {
+        var webFactory = new TestingDemoWebApplicationFactory(action, env);
+
+        await InitializeDatabaseAsync(webFactory, cancellationToken);
+
+        return new TestingInstance
+        {
+            User = TestUsers.Admin1,
             WebApplicationFactory = webFactory,
         };
     }
