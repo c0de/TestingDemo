@@ -192,6 +192,10 @@ graph LR
 
 ## 📚 Learning Resources
 
+### Project Documentation
+- [Testing Architecture Flow](./Testing_Flow.md) - Comprehensive guide to the WebApplicationFactory testing architecture and flow
+
+### External Resources
 - [Clean Architecture](https://jpnt.github.io/posts/dotnet8-clean-architecture-setup/)
 - [Fast Endpoints](http://fast-endpoints.com/)
 - [Fluent Assertions](https://fluentassertions.com)
