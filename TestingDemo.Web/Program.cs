@@ -14,10 +14,11 @@ using TestingDemo.Entities;
 var builder = WebApplication.CreateBuilder(args);
 var env = builder.Environment.EnvironmentName;
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("DefaultConnection string is not configured.");
+
 // Add DbContext
 builder.Services.AddDbContext<DemoDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     options.UseSqlServer(connectionString, sqlOptions =>
     {
         sqlOptions.EnableRetryOnFailure(
@@ -73,6 +74,10 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy("AdminOnly", policy => policy.RequireRole(Role.Admin.ToString()))
     .AddPolicy("AllUsers", policy => policy.RequireRole(RoleExtensions.GetAllRoleNames()));
 
+// Health Checks
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<DemoDbContext>()
+    .AddSqlServer(connectionString);
 
 var app = builder.Build();
 
