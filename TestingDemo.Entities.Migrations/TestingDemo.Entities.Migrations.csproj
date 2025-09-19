@@ -7,11 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Functions\dbo.GetUserAccountAge.sql" />
+    <None Remove="Functions\dbo.GetUserFullName.sql" />
+    <None Remove="Functions\dbo.GetUserStatsByRole.sql" />
     <None Remove="StoredProcedures\dbo.Process_Users.sql" />
     <None Remove="Views\dbo.ActiveUsers.sql" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Functions\dbo.GetUserAccountAge.sql" />
+    <EmbeddedResource Include="Functions\dbo.GetUserFullName.sql" />
+    <EmbeddedResource Include="Functions\dbo.GetUserStatsByRole.sql" />
     <EmbeddedResource Include="StoredProcedures\dbo.Process_Users.sql" />
     <EmbeddedResource Include="Views\dbo.ActiveUsers.sql" />
   </ItemGroup>
@@ -33,7 +39,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Functions\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

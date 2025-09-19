@@ -256,8 +256,11 @@ public class CreateUserTests
 
         // Assert
         actualEmails.ShouldNotBeEmpty();
+
+        // assert email details
         var email = actualEmails.First();
         email.To.First().Address.ShouldBe(command.Email);
+        email.Subject.ShouldBe("Welcome to TestingDemo");
         email.Body.ShouldBe($"Hello {command.FirstName},\n\nWelcome to TestingDemo!");
     }
 

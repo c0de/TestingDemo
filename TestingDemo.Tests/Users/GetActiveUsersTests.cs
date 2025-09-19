@@ -50,7 +50,14 @@ public class GetActiveUsersTests
         users.ShouldNotBeNull();
         users.Count().ShouldBeGreaterThan(0);
 
-        // inactive user should not be in the list
+        // assert admin should be in the list
+        users.ShouldContain(e => e.Id == TestUsers.Admin1.Id);
+        var admin1 = users.First(e => e.Id == TestUsers.Admin1.Id);
+        admin1.FirstName.ShouldBe(TestUsers.Admin1.FirstName);
+        admin1.LastName.ShouldBe(TestUsers.Admin1.LastName);
+        admin1.Email.ShouldBe(TestUsers.Admin1.Email);
+
+        // assert inactive user should not be in the list
         users.ShouldNotContain(e => e.Id == TestUsers.InactiveAdmin2.Id);
         users.ShouldNotContain(e => e.Id == TestUsers.InactiveUser10.Id);
     }
@@ -74,10 +81,14 @@ public class GetActiveUsersTests
         users.ShouldNotBeNull();
         users.Count().ShouldBeGreaterThan(0);
 
-        // admin should be in the list
+        // assert admin should be in the list
         users.ShouldContain(e => e.Id == TestUsers.Admin1.Id);
+        var admin1 = users.First(e => e.Id == TestUsers.Admin1.Id);
+        admin1.FirstName.ShouldBe(TestUsers.Admin1.FirstName);
+        admin1.LastName.ShouldBe(TestUsers.Admin1.LastName);
+        admin1.Email.ShouldBe(TestUsers.Admin1.Email);
 
-        // inactive user should not be in the list
+        // assert inactive user should not be in the list
         users.ShouldNotContain(e => e.Id == TestUsers.InactiveAdmin2.Id);
         users.ShouldNotContain(e => e.Id == TestUsers.InactiveUser10.Id);
     }
