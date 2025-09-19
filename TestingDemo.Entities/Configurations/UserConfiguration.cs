@@ -14,6 +14,7 @@ internal class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
+        // Add configuration
         builder.HasKey(x => x.Id);
         builder.Property(x => x.FirstName)
             .IsRequired()
@@ -31,5 +32,10 @@ internal class UserConfiguration : IEntityTypeConfiguration<User>
             .WithOne(x => x.User)
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Add indexes for performance
+        //builder.HasIndex(x => x.Email).IsUnique().HasDatabaseName("IX_Users_Email");
+        //builder.HasIndex(x => x.Role).HasDatabaseName("IX_Users_Role");
+        //builder.HasIndex(x => x.DeletedAt).HasDatabaseName("IX_Users_DeletedAt");
     }
 }

@@ -58,8 +58,8 @@ public class GetActiveUsersTests
         admin1.Email.ShouldBe(TestUsers.Admin1.Email);
 
         // assert inactive user should not be in the list
-        users.ShouldNotContain(e => e.Id == TestUsers.InactiveAdmin2.Id);
-        users.ShouldNotContain(e => e.Id == TestUsers.InactiveUser10.Id);
+        users.ShouldNotContain(e => e.Id == TestUsers.InactiveAdmin2.Id, "User InactiveAdmin2 exists");
+        users.ShouldNotContain(e => e.Id == TestUsers.InactiveUser10.Id, "User InactiveUser10 exists");
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ public class GetActiveUsersTests
         admin1.Email.ShouldBe(TestUsers.Admin1.Email);
 
         // assert inactive user should not be in the list
-        users.ShouldNotContain(e => e.Id == TestUsers.InactiveAdmin2.Id);
-        users.ShouldNotContain(e => e.Id == TestUsers.InactiveUser10.Id);
+        users.ShouldNotContain(e => e.Id == TestUsers.InactiveAdmin2.Id, "User InactiveAdmin2 exists");
+        users.ShouldNotContain(e => e.Id == TestUsers.InactiveUser10.Id, "User InactiveUser10 exists");
     }
 }

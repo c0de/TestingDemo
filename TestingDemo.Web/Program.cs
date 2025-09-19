@@ -18,11 +18,17 @@ var env = builder.Environment.EnvironmentName;
 builder.Services.AddDbContext<DemoDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    options.UseSqlServer(connectionString, e =>
+    options.UseSqlServer(connectionString, sqlOptions =>
     {
-        e.EnableRetryOnFailure();
-        e.CommandTimeout(60); // 60 seconds
-        e.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 3,
+            maxRetryDelay: TimeSpan.FromSeconds(5),
+            errorNumbersToAdd: null);
+        sqlOptions.CommandTimeout(60); // 60 seconds
+        sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+        //options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking); // For read-only scenarios
+        options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
+        options.EnableDetailedErrors(builder.Environment.IsDevelopment());
     });
 });
 builder.Services.AddScoped<IDemoDbContext>(e => e.GetRequiredService<DemoDbContext>());
@@ -45,16 +51,24 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
+    var jwtSettings = builder.Configuration.GetSection("Jwt");
+    var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT secret key not configured");
+
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = "TestIssuer",
-        ValidAudience = "TestAudience",
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("Super-Secret-Testing-Demo-Secret"))
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
     };
+});
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("UserOrAdmin", policy => policy.RequireRole("User", "Admin"));
 });
 
 

@@ -49,7 +49,7 @@ public class TestingInstance : IDisposable
             if (User != null)
             {
                 // create jwt token and set auth header for the current user
-                var token = TestingFactory.GenerateJwtToken(User);
+                var token = this.GenerateJwtToken();
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
 

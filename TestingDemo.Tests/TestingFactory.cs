@@ -129,33 +129,4 @@ public static class TestingFactory
             _initializationSemaphore.Release();
         }
     }
-
-    /// <summary>
-    /// Generate a Testing JWT token for a user.
-    /// </summary>
-    /// <param name="user">user</param>
-    /// <param name="secret">secret key</param>
-    /// <returns></returns>
-    internal static string GenerateJwtToken(User user, string secret = "Super-Secret-Testing-Demo-Secret")
-    {
-        var claims = new[]
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.Role, user.Role)
-        };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: "TestIssuer",
-            audience: "TestAudience",
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(1),
-            signingCredentials: creds);
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
 }
