@@ -5,6 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using TestingDemo.Entities;
@@ -30,9 +31,9 @@ public static class TestingFactory
         string? env = null,
         CancellationToken cancellationToken = default)
     {
-        await InitializeDatabaseAsync(cancellationToken);
-
         var webFactory = new TestingDemoWebApplicationFactory(action, env);
+
+        await InitializeDatabaseAsync(webFactory, cancellationToken);
 
         return new TestingInstance
         {
@@ -52,9 +53,9 @@ public static class TestingFactory
         string? env = null,
         CancellationToken cancellationToken = default)
     {
-        await InitializeDatabaseAsync(cancellationToken);
-
         var webFactory = new TestingDemoWebApplicationFactory(action, env);
+
+        await InitializeDatabaseAsync(webFactory, cancellationToken);
 
         return new TestingInstance
         {
@@ -68,7 +69,8 @@ public static class TestingFactory
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    private static async Task InitializeDatabaseAsync(CancellationToken cancellationToken)
+    private static async Task InitializeDatabaseAsync(TestingDemoWebApplicationFactory webFactory,
+        CancellationToken cancellationToken)
     {
         if (_sqlServerDbInitialized)
         {
@@ -84,8 +86,11 @@ public static class TestingFactory
                 return;
             }
 
-            // TODO: get the connection string from configuration so tests can be run in a pipeline
-            var connectionString = "Server=localhost; Integrated Security=True; Encrypt=True; TrustServerCertificate=True; Database=TestDatabase;";
+            // get connection string from webFactory
+            var scope = webFactory.Services.CreateScope();
+            var connectionString = scope.ServiceProvider.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnection");
+
+            // create db context options for sql server
             var options = new DbContextOptionsBuilder<DemoDbContext>()
                 .UseSqlServer(connectionString, options =>
                 {
