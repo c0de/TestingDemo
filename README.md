@@ -76,6 +76,7 @@ graph TD
 - **Purpose**: SQL Server database migrations and database object synchronization
 - **Key Components**:
   - **Entity Framework Migrations**: Database schema versioning and updates
+    - See [Migrations README](./TestingDemo.Entities.Migrations/README.md) for detailed EF migration commands and processes
   - **Database Object Synchronization**:
     - `SyncService` - Service for synchronizing stored procedures, functions, and views
     - `DbContextExtensions` - Extension methods for easy integration
